@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout :: head('All Rentals')}"></head>
+
+<body>
+    <div th:replace="~{layout :: navbar}"></div>
+
+    <div class="container" style="padding: 20px;">
+        <h2>All Rentals</h2>
+
+        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+            <thead>
+                <tr style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                    <th style="padding: 12px; text-align: left;">ID</th>
+                    <th style="padding: 12px; text-align: left;">User</th>
+                    <th style="padding: 12px; text-align: left;">Order Date</th>
+                    <th style="padding: 12px; text-align: left;">Total Amount</th>
+                    <th style="padding: 12px; text-align: left;">Status</th>
+                    <th style="padding: 12px; text-align: left;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="rental : ${rentals}" style="border-bottom: 1px solid #dee2e6;">
+                    <td style="padding: 12px;" th:text="${rental.id}">1</td>
+                    <td style="padding: 12px;" th:text="${rental.user != null ? rental.user.username : 'Unknown'}">User
+                    </td>
+                    <td style="padding: 12px;" th:text="${#temporals.format(rental.orderDate, 'yyyy-MM-dd HH:mm')}">
+                        2024-01-01</td>
+                    <td style="padding: 12px;" th:text="${'$' + rental.totalAmount}">$150.00</td>
+                    <td style="padding: 12px;" th:text="${rental.status}">ACTIVE</td>
+                    <td style="padding: 12px;">
+                        <a th:href="@{'/admin/rentals/delete/' + ${rental.id}}" class="btn btn-sm btn-danger"
+                            onclick="return confirm('Are you sure you want to cancel/delete this rental?');">Cancel</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="margin-top: 20px;">
+            <a href="/admin/dashboard" style="color: #007bff; text-decoration: none;">&larr; Back to Dashboard</a>
+        </div>
+    </div>
+
+    <div th:replace="~{layout :: footer}"></div>
+</body>
+
+</html>
