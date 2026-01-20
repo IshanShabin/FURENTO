@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout :: head(${furniture.name})}"></head>
+
+<body>
+    <div th:replace="~{layout :: navbar}"></div>
+
+    <div class="container my-5">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/#furniture">Furniture</a></li>
+                <li class="breadcrumb-item active" aria-current="page" th:text="${furniture.name}">Product Name</li>
+            </ol>
+        </nav>
+
+        <div class="row g-5 mt-2">
+            <!-- Product Image -->
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm">
+                    <img src="https://images.unsplash.com/photo-1592078615290-033ee584e267?auto=format&fit=crop&w=800&q=80"
+                        class="card-img-top rounded" alt="Product Image">
+                </div>
+            </div>
+
+            <!-- Product Details -->
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <span class="badge bg-secondary mb-2"
+                        th:text="${furniture.category != null ? furniture.category.name : 'Furniture'}">Category</span>
+                    <h1 class="fw-bold display-5" th:text="${furniture.name}">Modern Sofa</h1>
+                    <div class="d-flex align-items-center mt-2">
+                        <span class="text-primary fw-bold display-6 me-3"
+                            th:text="${'$' + furniture.rentalPricePerMonth + '/mo'}">$50/mo</span>
+                        <span class="text-muted text-decoration-line-through me-2"
+                            th:if="${furniture.purchasePrice != null}"
+                            th:text="${'$' + (furniture.purchasePrice * 0.05) + '/mo'}">$60/mo</span>
+                        <!-- Fake discount logic for display -->
+                        <span class="badge bg-success" th:if="${furniture.available}">In Stock</span>
+                        <span class="badge bg-danger" th:unless="${furniture.available}">Out of Stock</span>
+                    </div>
+                </div>
+
+                <p class="lead text-muted" th:text="${furniture.description}">
+                    Experience comfort like never before with this premium modern sofa. Perfect for your living room.
+                </p>
+
+                <hr class="my-4">
+
+                <!-- Rental Form -->
+                <form th:action="@{/cart/add}" method="post" class="card p-4 bg-light border-0">
+                    <input type="hidden" name="furnitureId" th:value="${furniture.id}">
+
+                    <h5 class="fw-bold mb-3"><i class="fas fa-calendar-alt me-2 text-primary"></i>Rental Options</h5>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="months" class="form-label fw-bold">Duration</label>
+                            <select class="form-select" id="months" name="months">
+                                <option value="1">1 Month</option>
+                                <option value="3">3 Months (5% Off)</option>
+                                <option value="6">6 Months (10% Off)</option>
+                                <option value="12">12 Months (15% Off)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="quantity" class="form-label fw-bold">Quantity</label>
+                            <input type="number" class="form-control" id="quantity" name="quantity" value="1" min="1"
+                                th:max="${furniture.stockQuantity}">
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill"
+                            th:disabled="${!furniture.available}">
+                            <i class="fas fa-shopping-cart me-2"></i> Add to Cart
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Sales Info -->
+                <div class="mt-4 p-3 border rounded dashed-border" th:if="${furniture.purchasePrice != null}">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="fw-bold mb-1">Want to own it mostly?</h6>
+                            <p class="small text-muted mb-0">You can buy this item outright.</p>
+                        </div>
+                        <div>
+                            <span class="fw-bold fs-5 me-2" th:text="${'$' + furniture.purchasePrice}">$900</span>
+                            <button class="btn btn-outline-dark btn-sm">Contact Sales</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Features -->
+                <div class="row mt-5 text-center">
+                    <div class="col-4">
+                        <i class="fas fa-truck text-secondary mb-2 fa-lg"></i>
+                        <p class="small text-muted">Free Delivery</p>
+                    </div>
+                    <div class="col-4">
+                        <i class="fas fa-tools text-secondary mb-2 fa-lg"></i>
+                        <p class="small text-muted">Free Setting</p>
+                    </div>
+                    <div class="col-4">
+                        <i class="fas fa-undo text-secondary mb-2 fa-lg"></i>
+                        <p class="small text-muted">Easy Return</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{layout :: footer}"></div>
+</body>
+
+</html>
