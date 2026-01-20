@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout :: head('About Us')}"></head>
+
+<body>
+    <div th:replace="~{layout :: navbar}"></div>
+
+    <!-- Hero Section -->
+    <header class="hero-section mb-5"
+        style="background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'); padding: 100px 0;">
+        <div class="container text-center text-white">
+            <h1 class="display-3 fw-bold mb-3">About FURENTO</h1>
+            <p class="lead mb-4">We are on a mission to make premium furniture accessible to everyone.</p>
+        </div>
+    </header>
+
+    <div class="container my-5">
+        <div class="row align-items-center mb-5">
+            <div class="col-md-6">
+                <img src="https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                    alt="Our Story" class="img-fluid rounded-3 shadow">
+            </div>
+            <div class="col-md-6 ps-md-5">
+                <h2 class="fw-bold mb-3">Our Story</h2>
+                <p class="text-muted">Founded in 2024, FURENTO started with a simple idea: why buy expensive furniture
+                    when you can rent it for a fraction of the cost? We realized that modern living requires
+                    flexibility, and traditional furniture ownership creates unnecessary burdens.</p>
+                <p class="text-muted">Today, we offer a curated collection of high-quality furniture for homes and
+                    offices. Whether you're moving to a new city, setting up a temporary workspace, or just love
+                    changing your decor often, FURENTO is here to help you live better.</p>
+            </div>
+        </div>
+
+        <div class="row text-center g-4 my-5">
+            <div class="col-12">
+                <h2 class="fw-bold mb-5">Our Values</h2>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4 h-100">
+                    <i class="fas fa-heart fa-3x text-primary mb-3"></i>
+                    <h4>Customer First</h4>
+                    <p class="text-muted">We obsess over customer experience, from easy ordering to free maintenance and
+                        returns.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4 h-100">
+                    <i class="fas fa-leaf fa-3x text-success mb-3"></i>
+                    <h4>Sustainability</h4>
+                    <p class="text-muted">Renting extends the lifecycle of furniture, reducing waste and our
+                        environmental footprint.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4 h-100">
+                    <i class="fas fa-gem fa-3x text-warning mb-3"></i>
+                    <h4>Quality</h4>
+                    <p class="text-muted">We only offer furniture that meets rigorous standards for durability, comfort,
+                        and style.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{layout :: footer}"></div>
+</body>
+
+</html>

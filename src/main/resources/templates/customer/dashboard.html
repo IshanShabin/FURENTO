@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout :: head('My Dashboard')}"></head>
+
+<body>
+    <div th:replace="~{layout :: navbar}"></div>
+
+    <div class="container" style="padding: 20px;">
+        <div style="margin-bottom: 30px;">
+            <h2>Welcome, <span th:text="${user.firstName}">User</span>!</h2>
+            <p>Here is an overview of your furniture rentals.</p>
+        </div>
+
+        <div th:if="${rentals.empty}"
+            style="text-align: center; padding: 40px; background: #f8f9fa; border-radius: 8px;">
+            <h3>You haven't rented any furniture yet.</h3>
+            <p>Browse our catalog to find the perfect furniture for your home!</p>
+            <a href="/" class="btn"
+                style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-top: 10px; display: inline-block;">Browse
+                Furniture</a>
+        </div>
+
+        <div th:unless="${rentals.empty}">
+            <h3>Your Rentals</h3>
+            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                <thead>
+                    <tr style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                        <th style="padding: 12px; text-align: left;">Order #</th>
+                        <th style="padding: 12px; text-align: left;">Date</th>
+                        <th style="padding: 12px; text-align: left;">Total Amount</th>
+                        <th style="padding: 12px; text-align: left;">Status</th>
+                        <th style="padding: 12px; text-align: left;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="rental : ${rentals}" style="border-bottom: 1px solid #dee2e6;">
+                        <td style="padding: 12px;" th:text="${rental.id}">101</td>
+                        <td style="padding: 12px;" th:text="${#temporals.format(rental.orderDate, 'MMM dd, yyyy')}">Jan
+                            01, 2024</td>
+                        <td style="padding: 12px;" th:text="${'$' + rental.totalAmount}">$150.00</td>
+                        <td style="padding: 12px;">
+                            <span th:class="${'status-badge status-' + rental.status}" th:text="${rental.status}"
+                                style="padding: 4px 8px; border-radius: 4px; font-size: 0.9em; font-weight: bold; background-color: #e9ecef;">
+                                ACTIVE
+                            </span>
+                        </td>
+                        <td style="padding: 12px;">
+                            <a href="#" style="color: #007bff; text-decoration: none;">View Details</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div th:replace="~{layout :: footer}"></div>
+</body>
+
+</html>

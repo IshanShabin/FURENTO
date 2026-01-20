@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout :: head('Admin Dashboard')}"></head>
+
+<body>
+    <div th:replace="~{layout :: navbar}"></div>
+
+    <div class="container" style="padding: 20px;">
+        <h2>Admin Dashboard</h2>
+
+        <div class="stats-grid"
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px;">
+            <div class="stat-card"
+                style="background: #f8f9fa; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <h3>Total Rentals</h3>
+                <p style="font-size: 2em; font-weight: bold; color: #333;" th:text="${totalRentals}">0</p>
+            </div>
+            <div class="stat-card"
+                style="background: #f8f9fa; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <h3>Total Furniture Items</h3>
+                <p style="font-size: 2em; font-weight: bold; color: #333;" th:text="${totalFurniture}">0</p>
+            </div>
+        </div>
+
+        <div class="admin-actions" style="margin-top: 40px;">
+            <h3>Quick Actions</h3>
+            <div style="display: flex; gap: 15px; margin-top: 15px;">
+                <a href="/admin/categories" class="btn"
+                    style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Manage
+                    Categories</a>
+                <a href="/admin/furniture" class="btn"
+                    style="background-color: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Manage
+                    Furniture</a>
+                <a href="/admin/rentals" class="btn"
+                    style="background-color: #17a2b8; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">View
+                    Rentals</a>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{layout :: footer}"></div>
+</body>
+
+</html>

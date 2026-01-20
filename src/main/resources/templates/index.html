@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout :: head('Home')}"></head>
+
+<body>
+    <div th:replace="~{layout :: navbar}"></div>
+
+    <!-- Hero Section -->
+    <header class="hero-section mb-5">
+        <div class="container">
+            <h1 class="display-3 fw-bold mb-3 slide-in-bottom">Rent Comfort. Live Better.</h1>
+            <p class="lead mb-4 slide-in-bottom" style="animation-delay: 0.2s; font-weight: 300;">Transform your space
+                with our premium furniture collection.</p>
+            <div class="slide-in-bottom" style="animation-delay: 0.4s;">
+                <a href="#furniture" class="btn btn-primary btn-lg rounded-pill px-5 me-3">Browse Collection</a>
+                <a href="#categories" class="btn btn-outline-light btn-lg rounded-pill px-5">View Categories</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Categories Section -->
+    <section id="categories" class="container mb-5">
+        <div class="text-center mb-5">
+            <h6 class="text-uppercase text-secondary fw-bold ls-2">Collections</h6>
+            <h2 class="fw-bold">Explore Categories</h2>
+        </div>
+
+        <!-- If no categories exist, show a placeholder message -->
+        <div th:if="${categories.empty}" class="text-center text-muted">
+            <p>No categories available yet. Please check back later.</p>
+        </div>
+
+        <div class="row g-4" th:unless="${categories.empty}">
+            <div class="col-md-6 col-lg-4" th:each="category : ${categories}">
+                <div class="card category-card text-white border-0 shadow-sm h-100">
+                    <!-- Placeholder image if imageUrl is missing -->
+                    <img th:src="${category.imageUrl != null && !category.imageUrl.empty ? category.imageUrl : 'https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?auto=format&fit=crop&w=800&q=80'}"
+                        class="card-img" alt="Category Image">
+                    <div class="category-overlay d-flex flex-column justify-content-end">
+                        <h4 class="card-title fw-bold" th:text="${category.name}">Living Room</h4>
+                        <p class="card-text small text-white-50" th:text="${category.description}">Comfortable sets for
+                            your home.</p>
+                    </div>
+                    <a href="#" class="stretched-link"></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Furniture Section -->
+    <section id="furniture" class="bg-light py-5">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-end mb-4">
+                <div>
+                    <h6 class="text-uppercase text-secondary fw-bold ls-2">New Arrivals</h6>
+                    <h2 class="fw-bold">Trending Furniture</h2>
+                </div>
+                <a href="#" class="text-decoration-none text-primary fw-bold">View All <i
+                        class="fas fa-arrow-right ms-1"></i></a>
+            </div>
+
+            <!-- If no furniture exists -->
+            <div th:if="${furnitureList.empty}" class="text-center text-muted py-5">
+                <i class="fas fa-box-open fa-3x mb-3 text-secondary"></i>
+                <p>No furniture items added yet.</p>
+            </div>
+
+            <div class="row g-4" th:unless="${furnitureList.empty}">
+                <div class="col-md-6 col-lg-3" th:each="item : ${furnitureList}">
+                    <div class="card h-100 border-0">
+                        <div class="position-relative">
+                            <!-- Default placeholder since we don't have images connected fully yet -->
+                            <img src="https://images.unsplash.com/photo-1592078615290-033ee584e267?auto=format&fit=crop&w=800&q=80"
+                                class="card-img-top" alt="Furniture Item" style="height: 200px; object-fit: cover;">
+                            <span class="position-absolute top-0 end-0 m-2 badge bg-dark"
+                                th:text="'Stock: ' + ${item.stockQuantity}">Stock: 5</span>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <small class="text-uppercase text-secondary fs-7 mb-1"
+                                th:text="${item.category != null ? item.category.name : 'Furniture'}">Category</small>
+                            <h5 class="card-title fw-bold mb-auto" th:text="${item.name}">Modern Sofa</h5>
+
+                            <div class="mt-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-primary fw-bold fs-5"
+                                        th:text="${'$' + item.rentalPricePerMonth + '/mo'}">$50/mo</span>
+                                </div>
+                                <div class="d-grid">
+                                    <a th:href="@{'/furniture/' + ${item.id}}"
+                                        class="btn btn-outline-dark btn-sm rounded-pill">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features / Why Choose Us -->
+    <section class="container my-5 py-5">
+        <div class="row text-center g-4">
+            <div class="col-md-4">
+                <div class="p-4 rounded-3 bg-white shadow-sm h-100 feature-box">
+                    <i class="fas fa-truck-moving fa-3x text-accent mb-3" style="color: var(--accent-color);"></i>
+                    <h4 class="fw-bold">Fast Delivery</h4>
+                    <p class="text-muted">Get your furniture delivered and set up within 24 hours.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4 rounded-3 bg-white shadow-sm h-100 feature-box">
+                    <i class="fas fa-tools fa-3x text-accent mb-3" style="color: var(--accent-color);"></i>
+                    <h4 class="fw-bold">Free Maintenance</h4>
+                    <p class="text-muted">We take care of repairs and maintenance so you don't have to.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4 rounded-3 bg-white shadow-sm h-100 feature-box">
+                    <i class="fas fa-undo fa-3x text-accent mb-3" style="color: var(--accent-color);"></i>
+                    <h4 class="fw-bold">Easy Returns</h4>
+                    <p class="text-muted">Flexible rental terms with hassle-free returns anytime.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="bg-light py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h6 class="text-uppercase text-secondary fw-bold ls-2">Testimonials</h6>
+                <h2 class="fw-bold">What Our Customers Say</h2>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100 p-4">
+                        <div class="mb-3 text-warning">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                                class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                        <p class="text-muted mb-4">"FURENTO transformed my new apartment! The furniture is high quality
+                            and the delivery was super fast. Highly recommended!"</p>
+                        <div class="d-flex align-items-center">
+                            <div class="bg-secondary rounded-circle d-flex justify-content-center align-items-center text-white fw-bold me-3"
+                                style="width: 50px; height: 50px;">JD</div>
+                            <div>
+                                <h6 class="fw-bold mb-0">John Doe</h6>
+                                <small class="text-muted">Software Engineer</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100 p-4">
+                        <div class="mb-3 text-warning">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                                class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <p class="text-muted mb-4">"I love the flexibility of renting. I change my decor every year, and
+                            FURENTO makes it so easy and affordable."</p>
+                        <div class="d-flex align-items-center">
+                            <div class="bg-secondary rounded-circle d-flex justify-content-center align-items-center text-white fw-bold me-3"
+                                style="width: 50px; height: 50px;">SM</div>
+                            <div>
+                                <h6 class="fw-bold mb-0">Sarah Miller</h6>
+                                <small class="text-muted">Interior Designer</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100 p-4">
+                        <div class="mb-3 text-warning">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                                class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                        <p class="text-muted mb-4">"Great customer service. One of the chairs had a wobble, and they
+                            replaced it immediately. Will definitely rent again."</p>
+                        <div class="d-flex align-items-center">
+                            <div class="bg-secondary rounded-circle d-flex justify-content-center align-items-center text-white fw-bold me-3"
+                                style="width: 50px; height: 50px;">RK</div>
+                            <div>
+                                <h6 class="fw-bold mb-0">Rahul Kumar</h6>
+                                <small class="text-muted">Student</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="bg-primary text-white text-center py-5">
+        <div class="container">
+            <h2 class="fw-bold mb-3">Ready to transform your home?</h2>
+            <p class="lead mb-4 text-white-50">Join thousands of happy customers who live better with FURENTO.</p>
+            <a href="/register" class="btn btn-light rounded-pill px-5 btn-lg text-primary fw-bold">Get Started
+                Today</a>
+        </div>
+    </section>
+
+    <div th:replace="~{layout :: footer}"></div>
+</body>
+
+</html>
