@@ -1,32 +1,16 @@
 # FURENTO
 
-Furento is a furniture rental management system for browsing available furniture and placing rental orders.
+FURENTO is a furniture rental management system for browsing furniture, creating rental orders, and managing inventory.
 
-## Run locally
+## Features
 
-Requirements: Java 17, Maven, and MySQL.
+- Browse furniture by category and view rental pricing and availability.
+- Register and sign in to manage a shopping cart and rental orders.
+- Choose rental quantities and durations, then submit a delivery address at checkout.
+- Track rentals from a customer dashboard.
+- Manage furniture, categories, and rental orders through the admin area.
+- Accept Cash on Delivery or use Razorpay Checkout for online UPI and card payments.
 
-1. Create the database in MySQL:
+## Payments
 
-   ```sql
-   CREATE DATABASE springdb;
-   ```
-
-2. In PowerShell, set your local MySQL password and (for online checkout) Razorpay **Test Mode** keys. Enter secrets at the prompts; do not commit them.
-
-   ```powershell
-   $env:DB_PASSWORD = Read-Host "MySQL password"
-   $env:RAZORPAY_KEY_ID = Read-Host "Razorpay test Key ID"
-   $secret = Read-Host "Razorpay test Key Secret" -AsSecureString
-   $env:RAZORPAY_KEY_SECRET = [System.Net.NetworkCredential]::new("", $secret).Password
-   ```
-
-   Razorpay keys are optional if you only want to use Cash on Delivery. Online test payments are simulated and do not charge real money.
-
-3. From the project directory, start the app:
-
-   ```powershell
-   mvn spring-boot:run
-   ```
-
-4. Open [http://localhost:8082](http://localhost:8082).
+Online checkout creates a Razorpay order and verifies the payment on the server before saving the rental. Razorpay credentials are read from environment variables and should never be committed to the repository. Test Mode simulates transactions; live payments require an activated Razorpay account and Live Mode keys.
