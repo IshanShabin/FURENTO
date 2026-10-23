@@ -22,6 +22,10 @@ public class Payment {
 
     private String status; // PENDING, PAID
 
+    private String gatewayOrderId;
+
+    private String gatewayPaymentId;
+
     public Payment() {}
 
     public Long getId() { return id; }
@@ -36,4 +40,8 @@ public class Payment {
     public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+    public String getGatewayOrderId() { return gatewayOrderId; }
+    public void setGatewayOrderId(String gatewayOrderId) { this.gatewayOrderId = gatewayOrderId; }
+    public String getGatewayPaymentId() { return gatewayPaymentId; }
+    public void setGatewayPaymentId(String gatewayPaymentId) { this.gatewayPaymentId = gatewayPaymentId; }
 }

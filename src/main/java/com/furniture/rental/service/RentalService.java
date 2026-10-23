@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -46,12 +47,14 @@ public class RentalService {
             total = total.add(lineAmount);
         }
 
-        rental.setTotalAmount(total);
+        BigDecimal tax = total.multiply(new BigDecimal("0.05")).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal grandTotal = total.add(tax);
+        rental.setTotalAmount(grandTotal);
         rental.setOrderDate(LocalDateTime.now());
         rental.setStatus("PENDING"); // or ACTIVE depending on payment flow
 
         if (rental.getPayment() != null) {
-            rental.getPayment().setAmount(total);
+            rental.getPayment().setAmount(grandTotal);
             rental.getPayment().setRental(rental);
         }
 
