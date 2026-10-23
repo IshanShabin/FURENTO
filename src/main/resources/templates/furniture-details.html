@@ -25,9 +25,9 @@
         <div class="col-md-6">
           <div class="card border-0 shadow-sm">
             <img
-              src="https://images.unsplash.com/photo-1592078615290-033ee584e267?auto=format&fit=crop&w=800&q=80"
+              th:src="${furniture.images != null and !furniture.images.empty ? furniture.images[0].imageUrl : 'https://images.unsplash.com/photo-1592078615290-033ee584e267?auto=format&fit=crop&w=800&q=80'}"
               class="card-img-top rounded"
-              alt="Product Image"
+              th:alt="${furniture.name}"
             />
           </div>
         </div>
@@ -41,7 +41,7 @@
               >Category</span
             >
             <h1 class="fw-bold display-5" th:text="${furniture.name}">
-              Modern Sofa
+              Furniture item
             </h1>
             <div class="d-flex align-items-center mt-2">
               <span

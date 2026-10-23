@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface FurnitureRepository extends JpaRepository<Furniture, Long> {
     List<Furniture> findByCategoryId(Long categoryId);
+    boolean existsByNameIgnoreCase(String name);
+    List<Furniture> findByNameIgnoreCase(String name);
 }

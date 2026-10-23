@@ -20,7 +20,7 @@ public class HomeController {
 
     @GetMapping("/")
     public String home(Model model) {
-        model.addAttribute("furnitureList", furnitureService.getAllFurniture());
+        model.addAttribute("furnitureList", furnitureService.getCustomerCatalog());
         model.addAttribute("categories", categoryService.getAllCategories());
         return "index";
     }
@@ -28,6 +28,9 @@ public class HomeController {
     @GetMapping("/furniture/{id}")
     public String viewFurniture(@PathVariable Long id, Model model) {
         Furniture furniture = furnitureService.getFurnitureById(id);
+        if (!furnitureService.isCustomerCatalogItem(furniture)) {
+            return "redirect:/";
+        }
         model.addAttribute("furniture", furniture);
         return "furniture-details";
     }

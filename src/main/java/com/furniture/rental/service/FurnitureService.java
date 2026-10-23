@@ -20,6 +20,16 @@ public class FurnitureService {
         return furnitureRepository.findByCategoryId(categoryId);
     }
 
+    public List<Furniture> getCustomerCatalog() {
+        return getAllFurniture().stream()
+                .filter(furniture -> !"Sofa".equalsIgnoreCase(furniture.getName()))
+                .toList();
+    }
+
+    public boolean isCustomerCatalogItem(Furniture furniture) {
+        return furniture != null && !"Sofa".equalsIgnoreCase(furniture.getName());
+    }
+
     public Furniture getFurnitureById(Long id) {
         return furnitureRepository.findById(id).orElse(null);
     }

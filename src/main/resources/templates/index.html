@@ -97,11 +97,10 @@
           <div class="col-md-6 col-lg-3" th:each="item : ${furnitureList}">
             <div class="card h-100 border-0">
               <div class="position-relative">
-                <!-- Default placeholder since we don't have images connected fully yet -->
                 <img
-                  src="https://images.unsplash.com/photo-1592078615290-033ee584e267?auto=format&fit=crop&w=800&q=80"
+                  th:src="${item.images != null and !item.images.empty ? item.images[0].imageUrl : 'https://images.unsplash.com/photo-1592078615290-033ee584e267?auto=format&fit=crop&w=800&q=80'}"
                   class="card-img-top"
-                  alt="Furniture Item"
+                  th:alt="${item.name}"
                   style="height: 200px; object-fit: cover"
                 />
                 <span
@@ -117,7 +116,7 @@
                   >Category</small
                 >
                 <h5 class="card-title fw-bold mb-auto" th:text="${item.name}">
-                  Modern Sofa
+                  Furniture item
                 </h5>
 
                 <div class="mt-3">
