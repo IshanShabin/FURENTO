@@ -2,6 +2,7 @@ package com.furniture.rental.controller;
 
 import com.furniture.rental.entity.Category;
 import com.furniture.rental.entity.Furniture;
+import com.furniture.rental.entity.Rental;
 import com.furniture.rental.service.CategoryService;
 import com.furniture.rental.service.FurnitureService;
 import com.furniture.rental.service.RentalService;
@@ -9,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Comparator;
+import java.util.List;
 
 @Controller
 @RequestMapping("/admin")
@@ -25,8 +29,28 @@ public class AdminController {
 
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
-        model.addAttribute("totalRentals", rentalService.getAllRentals().size());
-        model.addAttribute("totalFurniture", furnitureService.getAllFurniture().size());
+        List<Rental> rentals = rentalService.getAllRentals();
+        List<Furniture> furniture = furnitureService.getAllFurniture();
+        List<Furniture> lowStockFurniture = furniture.stream()
+            .filter(item -> item.getStockQuantity() > 0 && item.getStockQuantity() <= 2)
+            .sorted(Comparator.comparingInt(Furniture::getStockQuantity))
+            .limit(5)
+            .toList();
+
+        model.addAttribute("totalRentals", rentals.size());
+        model.addAttribute("pendingRentals", rentals.stream()
+            .filter(rental -> "PENDING".equalsIgnoreCase(rental.getStatus())).count());
+        model.addAttribute("activeRentals", rentals.stream()
+            .filter(rental -> "ACTIVE".equalsIgnoreCase(rental.getStatus())).count());
+        model.addAttribute("availableFurniture", furniture.stream().filter(Furniture::isAvailable).count());
+        model.addAttribute("lowStockCount", furniture.stream()
+            .filter(item -> item.getStockQuantity() > 0 && item.getStockQuantity() <= 2).count());
+        model.addAttribute("recentRentals", rentals.stream()
+            .sorted(Comparator.comparing(Rental::getOrderDate,
+                Comparator.nullsLast(Comparator.reverseOrder())))
+            .limit(5)
+            .toList());
+        model.addAttribute("lowStockFurniture", lowStockFurniture);
         return "admin/dashboard";
     }
 
