@@ -1,52 +1,442 @@
 [
-  {"name":"Wicker Accent Chair","category":"Living Room","description":"Handwoven wicker accent chair with a light natural frame.","rentalPricePerMonth":349,"stockQuantity":4,"imageUrl":"https://images.unsplash.com/photo-1758486561455-ebd0d3ba7423?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Sculptural Lounge Chair","category":"Living Room","description":"A rounded statement chair with a sculptural upholstered silhouette.","rentalPricePerMonth":499,"stockQuantity":3,"imageUrl":"https://images.unsplash.com/photo-1771520711516-4b677ab05542?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Gray Wood-Frame Armchair","category":"Living Room","description":"Padded gray armchair with a warm wooden frame.","rentalPricePerMonth":449,"stockQuantity":4,"imageUrl":"https://images.unsplash.com/photo-1509764716339-c509a0c0d3e1?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Beige Recliner Chair","category":"Living Room","description":"Relaxed beige recliner designed for a comfortable reading corner.","rentalPricePerMonth":599,"stockQuantity":3,"imageUrl":"https://images.unsplash.com/photo-1759722666961-8068c5ad61ab?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Black Leather Accent Chair","category":"Living Room","description":"A dark leather accent chair with a clean modern profile.","rentalPricePerMonth":499,"stockQuantity":3,"imageUrl":"https://images.unsplash.com/photo-1589584649628-b597067e07a3?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Curved-Back Wooden Chair","category":"Living Room","description":"Solid wood chair with a curved sculpted backrest.","rentalPricePerMonth":299,"stockQuantity":5,"imageUrl":"https://images.unsplash.com/photo-1748975026989-bb6327dfcd83?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Green-Cushion Wood Chair","category":"Living Room","description":"A simple wooden chair finished with a green seat cushion.","rentalPricePerMonth":279,"stockQuantity":5,"imageUrl":"https://images.unsplash.com/photo-1705320678447-78c5fe2615a7?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Brown Wooden Side Chair","category":"Living Room","description":"Compact brown wooden chair for an occasional seating spot.","rentalPricePerMonth":249,"stockQuantity":5,"imageUrl":"https://images.unsplash.com/photo-1572297794744-a19043e308f8?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Wood Chair with White Cushion","category":"Living Room","description":"Natural wood chair paired with a soft white cushion.","rentalPricePerMonth":299,"stockQuantity":4,"imageUrl":"https://images.unsplash.com/photo-1774294067819-91abcd349372?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Rectangular Wood Coffee Table","category":"Living Room","description":"Low rectangular coffee table in a natural brown wood finish.","rentalPricePerMonth":349,"stockQuantity":4,"imageUrl":"https://images.unsplash.com/photo-1560448076-ee77deea722b?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Round Floral Side Table","category":"Living Room","description":"A small round table styled with a simple floral centerpiece.","rentalPricePerMonth":229,"stockQuantity":5,"imageUrl":"https://images.unsplash.com/photo-1653971858625-9cb23d0dca80?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Two-Door Wood Cabinet","category":"Living Room","description":"Compact two-door cabinet for everyday living-room storage.","rentalPricePerMonth":599,"stockQuantity":3,"imageUrl":"https://images.unsplash.com/photo-1558997519-83ea9252edf8?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Wooden Drawer Chest","category":"Living Room","description":"A practical wooden chest with multiple drawers.","rentalPricePerMonth":549,"stockQuantity":3,"imageUrl":"https://images.unsplash.com/photo-1544691560-fc2053d97726?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Ornate Gold-and-Black Armoire","category":"Living Room","description":"A decorative armoire with a distinctive gold-and-black finish.","rentalPricePerMonth":899,"stockQuantity":2,"imageUrl":"https://images.unsplash.com/photo-1704789338539-47f352dabbc4?auto=format&fit=crop&w=900&q=80"},
-  {"name":"White Storage Cabinet","category":"Living Room","description":"Minimal white cabinet for concealed household storage.","rentalPricePerMonth":499,"stockQuantity":4,"imageUrl":"https://images.unsplash.com/photo-1628843359126-8cd868ba4ce0?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Brown Bookcase","category":"Living Room","description":"Open brown bookcase with several shelves for books and decor.","rentalPricePerMonth":399,"stockQuantity":4,"imageUrl":"https://images.unsplash.com/photo-1593430980369-68efc5a5eb34?auto=format&fit=crop&w=900&q=80"},
-  {"name":"White Wooden Bookshelf","category":"Living Room","description":"A light-colored bookshelf for books and small display pieces.","rentalPricePerMonth":379,"stockQuantity":4,"imageUrl":"https://images.unsplash.com/photo-1614620026694-f5f38182ab9f?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Modern Open Bookcase","category":"Living Room","description":"Tall open shelving unit with a contemporary profile.","rentalPricePerMonth":449,"stockQuantity":3,"imageUrl":"https://images.unsplash.com/photo-1725783521817-3f37e54390a4?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Light Wood Wall Shelving Unit","category":"Living Room","description":"Light wood wall unit combining open shelves and closed storage.","rentalPricePerMonth":699,"stockQuantity":2,"imageUrl":"https://images.unsplash.com/photo-1781032392300-ed3bdf78ef4c?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Low Shelving Cabinet","category":"Living Room","description":"Low-profile shelving cabinet with a light wood finish.","rentalPricePerMonth":599,"stockQuantity":3,"imageUrl":"https://images.unsplash.com/photo-1781032044213-571bc1faa592?auto=format&fit=crop&w=900&q=80"},
-  {"name":"White Dining Table Set","category":"Dining Room","description":"White dining table paired with matching dining chairs.","rentalPricePerMonth":899,"stockQuantity":3,"imageUrl":"https://images.unsplash.com/photo-1602872030490-4a484a7b3ba6?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Natural Wood Dining Set","category":"Dining Room","description":"A warm wood dining table with coordinating chairs.","rentalPricePerMonth":1099,"stockQuantity":3,"imageUrl":"https://images.unsplash.com/photo-1740759546813-6b58d44f5dce?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Six-Seat Upholstered Dining Set","category":"Dining Room","description":"Dining table with six upholstered chairs for family meals.","rentalPricePerMonth":1499,"stockQuantity":2,"imageUrl":"https://images.unsplash.com/photo-1758977403341-0104135995af?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Black Rectangular Dining Table","category":"Dining Room","description":"A rectangular black wood table with matching dining chairs.","rentalPricePerMonth":999,"stockQuantity":3,"imageUrl":"https://images.unsplash.com/photo-1568347760450-1ef7874c5f5f?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Dining Table with Centerpiece","category":"Dining Room","description":"A clean-lined dining table styled with a vase centerpiece.","rentalPricePerMonth":849,"stockQuantity":3,"imageUrl":"https://images.unsplash.com/photo-1653971858569-8a0fa1d2b790?auto=format&fit=crop&w=900&q=80"},
-  {"name":"White Statement Dining Table","category":"Dining Room","description":"A white dining table with a bold black-and-white surface pattern.","rentalPricePerMonth":949,"stockQuantity":2,"imageUrl":"https://images.unsplash.com/photo-1718049719698-e2a64788589e?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Wood Dining Set with Gray Chairs","category":"Dining Room","description":"Natural wood dining table paired with gray upholstered chairs.","rentalPricePerMonth":1199,"stockQuantity":3,"imageUrl":"https://images.unsplash.com/photo-1758977403865-f79e156415b3?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Upholstered Dining Chair Set","category":"Dining Room","description":"A coordinated dining table and upholstered chair set.","rentalPricePerMonth":1299,"stockQuantity":2,"imageUrl":"https://images.unsplash.com/photo-1758977403826-01e2c8a3f68f?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Compact Dining Table Set","category":"Dining Room","description":"A compact wood table and chairs suited to smaller dining areas.","rentalPricePerMonth":799,"stockQuantity":3,"imageUrl":"https://images.unsplash.com/photo-1738900737999-c7b0b26addc2?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Wooden Dining Table and Chairs","category":"Dining Room","description":"A classic dining table set in a bright, simple interior.","rentalPricePerMonth":999,"stockQuantity":3,"imageUrl":"https://images.unsplash.com/photo-1704040686446-428673c1c887?auto=format&fit=crop&w=900&q=80"},
-  {"name":"White Writing Desk","category":"Home Office","description":"A white writing desk paired with a gray chair.","rentalPricePerMonth":499,"stockQuantity":4,"imageUrl":"https://images.unsplash.com/photo-1613252036716-e1efc9788e5b?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Brown Wooden Writing Desk","category":"Home Office","description":"A compact brown wooden desk with a matching chair.","rentalPricePerMonth":549,"stockQuantity":4,"imageUrl":"https://images.unsplash.com/photo-1587540006503-581d37ea394d?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Computer Desk with Monitor","category":"Home Office","description":"A wood computer desk with a dedicated work surface.","rentalPricePerMonth":599,"stockQuantity":3,"imageUrl":"https://images.unsplash.com/photo-1708200216322-9463ac285552?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Workstation Desk and Chair","category":"Home Office","description":"A functional computer workstation with a coordinating chair.","rentalPricePerMonth":699,"stockQuantity":3,"imageUrl":"https://images.unsplash.com/photo-1656259145847-81bcdac8f0f3?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Glass-Top Writing Desk","category":"Home Office","description":"A modern desk with a glass top and wooden legs.","rentalPricePerMonth":649,"stockQuantity":3,"imageUrl":"https://images.unsplash.com/photo-1679309981674-cef0e23a7864?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Black Two-Drawer Desk","category":"Home Office","description":"A black desk with two drawers for a tidy work area.","rentalPricePerMonth":599,"stockQuantity":3,"imageUrl":"https://images.unsplash.com/photo-1724862873281-238213626373?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Vintage Typewriter Desk","category":"Home Office","description":"A classic writing desk styled with a typewriter.","rentalPricePerMonth":499,"stockQuantity":2,"imageUrl":"https://images.unsplash.com/photo-1640130541949-aa5d40f9635d?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Writing Desk with Task Lamp","category":"Home Office","description":"A simple desk and chair arranged with a focused task lamp.","rentalPricePerMonth":549,"stockQuantity":3,"imageUrl":"https://images.unsplash.com/photo-1718524767521-1aec8589115b?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Laptop Work Desk","category":"Home Office","description":"A practical wooden desk arranged for laptop work.","rentalPricePerMonth":449,"stockQuantity":4,"imageUrl":"https://images.unsplash.com/photo-1604074131665-7a4b13870ab4?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Study Desk with Plant Stand","category":"Home Office","description":"A desk and chair with space for a small plant or desk accessory.","rentalPricePerMonth":499,"stockQuantity":3,"imageUrl":"https://images.unsplash.com/photo-1719150006650-8255498a9faf?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Tufted Headboard Bed","category":"Bedroom","description":"A bed with a padded tufted headboard and a coordinated bedroom look.","rentalPricePerMonth":1299,"stockQuantity":2,"imageUrl":"https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80"},
-  {"name":"White Cover Upholstered Bed","category":"Bedroom","description":"A neatly made bed with a soft white cover and pillows.","rentalPricePerMonth":999,"stockQuantity":3,"imageUrl":"https://images.unsplash.com/photo-1635594202056-9ea3b497e5c0?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Beige Bed Frame","category":"Bedroom","description":"A beige bed frame with a light mattress and understated styling.","rentalPricePerMonth":1099,"stockQuantity":3,"imageUrl":"https://images.unsplash.com/photo-1560185128-e173042f79dd?auto=format&fit=crop&w=900&q=80"},
-  {"name":"White Linen Bed","category":"Bedroom","description":"A bed dressed in crisp white linen for a calm bedroom.","rentalPricePerMonth":999,"stockQuantity":3,"imageUrl":"https://images.unsplash.com/photo-1617198998846-56e8a4c6e7b7?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Modern Wood-Accent Bed","category":"Bedroom","description":"A modern bedroom bed paired with warm wooden accents.","rentalPricePerMonth":1199,"stockQuantity":2,"imageUrl":"https://images.unsplash.com/photo-1757344454333-cc666252e596?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Platform Bed with White Sheets","category":"Bedroom","description":"A low platform bed with white sheets and a minimal frame.","rentalPricePerMonth":899,"stockQuantity":3,"imageUrl":"https://images.unsplash.com/photo-1631650120985-20791383127e?auto=format&fit=crop&w=900&q=80"},
-  {"name":"White Wooden Bed Frame","category":"Bedroom","description":"A white wood bed frame with a clean, simple design.","rentalPricePerMonth":949,"stockQuantity":3,"imageUrl":"https://images.unsplash.com/photo-1425219366480-47fdbbe0e83b?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Striped-Pillow Modern Bed","category":"Bedroom","description":"A modern bed styled with striped accent pillows.","rentalPricePerMonth":1099,"stockQuantity":2,"imageUrl":"https://images.unsplash.com/photo-1768253843445-49fa5f4a801f?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Walnut Bedside Table","category":"Bedroom","description":"A compact wooden bedside table with books on the lower shelf.","rentalPricePerMonth":199,"stockQuantity":5,"imageUrl":"https://images.unsplash.com/photo-1532372320572-cda25653a26d?auto=format&fit=crop&w=900&q=80"},
-  {"name":"Bedside Table with Phone Shelf","category":"Bedroom","description":"A small bedside table with room for a phone and nightly essentials.","rentalPricePerMonth":179,"stockQuantity":5,"imageUrl":"https://images.unsplash.com/photo-1649194271420-b2ff52418a62?auto=format&fit=crop&w=900&q=80"}
+  {
+    "name": "Wicker Accent Chair",
+    "category": "Living Room",
+    "description": "Handwoven wicker accent chair with a light natural frame.",
+    "rentalPricePerMonth": 349,
+    "stockQuantity": 4,
+    "imageUrl": "https://images.unsplash.com/photo-1758486561455-ebd0d3ba7423?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Sculptural Lounge Chair",
+    "category": "Living Room",
+    "description": "A rounded statement chair with a sculptural upholstered silhouette.",
+    "rentalPricePerMonth": 499,
+    "stockQuantity": 3,
+    "imageUrl": "https://images.unsplash.com/photo-1771520711516-4b677ab05542?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Gray Wood-Frame Armchair",
+    "category": "Living Room",
+    "description": "Padded gray armchair with a warm wooden frame.",
+    "rentalPricePerMonth": 449,
+    "stockQuantity": 4,
+    "imageUrl": "https://images.unsplash.com/photo-1509764716339-c509a0c0d3e1?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Beige Recliner Chair",
+    "category": "Living Room",
+    "description": "Relaxed beige recliner designed for a comfortable reading corner.",
+    "rentalPricePerMonth": 599,
+    "stockQuantity": 3,
+    "imageUrl": "https://images.unsplash.com/photo-1759722666961-8068c5ad61ab?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Black Leather Accent Chair",
+    "category": "Living Room",
+    "description": "A dark leather accent chair with a clean modern profile.",
+    "rentalPricePerMonth": 499,
+    "stockQuantity": 3,
+    "imageUrl": "https://images.unsplash.com/photo-1589584649628-b597067e07a3?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Curved-Back Wooden Chair",
+    "category": "Living Room",
+    "description": "Solid wood chair with a curved sculpted backrest.",
+    "rentalPricePerMonth": 299,
+    "stockQuantity": 5,
+    "imageUrl": "https://images.unsplash.com/photo-1748975026989-bb6327dfcd83?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Green-Cushion Wood Chair",
+    "category": "Living Room",
+    "description": "A simple wooden chair finished with a green seat cushion.",
+    "rentalPricePerMonth": 279,
+    "stockQuantity": 5,
+    "imageUrl": "https://images.unsplash.com/photo-1705320678447-78c5fe2615a7?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Brown Wooden Side Chair",
+    "category": "Living Room",
+    "description": "Compact brown wooden chair for an occasional seating spot.",
+    "rentalPricePerMonth": 249,
+    "stockQuantity": 5,
+    "imageUrl": "https://images.unsplash.com/photo-1572297794744-a19043e308f8?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Wood Chair with White Cushion",
+    "category": "Living Room",
+    "description": "Natural wood chair paired with a soft white cushion.",
+    "rentalPricePerMonth": 299,
+    "stockQuantity": 4,
+    "imageUrl": "https://images.unsplash.com/photo-1774294067819-91abcd349372?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Rectangular Wood Coffee Table",
+    "category": "Living Room",
+    "description": "Low rectangular coffee table in a natural brown wood finish.",
+    "rentalPricePerMonth": 349,
+    "stockQuantity": 4,
+    "imageUrl": "https://images.unsplash.com/photo-1560448076-ee77deea722b?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Round Floral Side Table",
+    "category": "Living Room",
+    "description": "A small round table styled with a simple floral centerpiece.",
+    "rentalPricePerMonth": 229,
+    "stockQuantity": 5,
+    "imageUrl": "https://images.unsplash.com/photo-1653971858625-9cb23d0dca80?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Two-Door Wood Cabinet",
+    "category": "Living Room",
+    "description": "Compact two-door cabinet for everyday living-room storage.",
+    "rentalPricePerMonth": 599,
+    "stockQuantity": 3,
+    "imageUrl": "https://images.unsplash.com/photo-1558997519-83ea9252edf8?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Wooden Drawer Chest",
+    "category": "Living Room",
+    "description": "A practical wooden chest with multiple drawers.",
+    "rentalPricePerMonth": 549,
+    "stockQuantity": 3,
+    "imageUrl": "https://images.unsplash.com/photo-1544691560-fc2053d97726?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Ornate Gold-and-Black Armoire",
+    "category": "Living Room",
+    "description": "A decorative armoire with a distinctive gold-and-black finish.",
+    "rentalPricePerMonth": 899,
+    "stockQuantity": 2,
+    "imageUrl": "https://images.unsplash.com/photo-1704789338539-47f352dabbc4?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "White Storage Cabinet",
+    "category": "Living Room",
+    "description": "Minimal white cabinet for concealed household storage.",
+    "rentalPricePerMonth": 499,
+    "stockQuantity": 4,
+    "imageUrl": "https://images.unsplash.com/photo-1628843359126-8cd868ba4ce0?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Brown Bookcase",
+    "category": "Living Room",
+    "description": "Open brown bookcase with several shelves for books and decor.",
+    "rentalPricePerMonth": 399,
+    "stockQuantity": 4,
+    "imageUrl": "https://images.unsplash.com/photo-1593430980369-68efc5a5eb34?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "White Wooden Bookshelf",
+    "category": "Living Room",
+    "description": "A light-colored bookshelf for books and small display pieces.",
+    "rentalPricePerMonth": 379,
+    "stockQuantity": 4,
+    "imageUrl": "https://images.unsplash.com/photo-1614620026694-f5f38182ab9f?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Modern Open Bookcase",
+    "category": "Living Room",
+    "description": "Tall open shelving unit with a contemporary profile.",
+    "rentalPricePerMonth": 449,
+    "stockQuantity": 3,
+    "imageUrl": "https://images.unsplash.com/photo-1725783521817-3f37e54390a4?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Light Wood Wall Shelving Unit",
+    "category": "Living Room",
+    "description": "Light wood wall unit combining open shelves and closed storage.",
+    "rentalPricePerMonth": 699,
+    "stockQuantity": 2,
+    "imageUrl": "https://images.unsplash.com/photo-1781032392300-ed3bdf78ef4c?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Low Shelving Cabinet",
+    "category": "Living Room",
+    "description": "Low-profile shelving cabinet with a light wood finish.",
+    "rentalPricePerMonth": 599,
+    "stockQuantity": 3,
+    "imageUrl": "https://images.unsplash.com/photo-1781032044213-571bc1faa592?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "White Dining Table Set",
+    "category": "Dining Room",
+    "description": "White dining table paired with matching dining chairs.",
+    "rentalPricePerMonth": 899,
+    "stockQuantity": 3,
+    "imageUrl": "https://images.unsplash.com/photo-1602872030490-4a484a7b3ba6?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Natural Wood Dining Set",
+    "category": "Dining Room",
+    "description": "A warm wood dining table with coordinating chairs.",
+    "rentalPricePerMonth": 1099,
+    "stockQuantity": 3,
+    "imageUrl": "https://images.unsplash.com/photo-1740759546813-6b58d44f5dce?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Six-Seat Upholstered Dining Set",
+    "category": "Dining Room",
+    "description": "Dining table with six upholstered chairs for family meals.",
+    "rentalPricePerMonth": 1499,
+    "stockQuantity": 2,
+    "imageUrl": "https://images.unsplash.com/photo-1758977403341-0104135995af?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Black Rectangular Dining Table",
+    "category": "Dining Room",
+    "description": "A rectangular black wood table with matching dining chairs.",
+    "rentalPricePerMonth": 999,
+    "stockQuantity": 3,
+    "imageUrl": "https://images.unsplash.com/photo-1568347760450-1ef7874c5f5f?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Dining Table with Centerpiece",
+    "category": "Dining Room",
+    "description": "A clean-lined dining table styled with a vase centerpiece.",
+    "rentalPricePerMonth": 849,
+    "stockQuantity": 3,
+    "imageUrl": "https://images.unsplash.com/photo-1653971858569-8a0fa1d2b790?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "White Statement Dining Table",
+    "category": "Dining Room",
+    "description": "A white dining table with a bold black-and-white surface pattern.",
+    "rentalPricePerMonth": 949,
+    "stockQuantity": 2,
+    "imageUrl": "https://images.unsplash.com/photo-1718049719698-e2a64788589e?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Wood Dining Set with Gray Chairs",
+    "category": "Dining Room",
+    "description": "Natural wood dining table paired with gray upholstered chairs.",
+    "rentalPricePerMonth": 1199,
+    "stockQuantity": 3,
+    "imageUrl": "https://images.unsplash.com/photo-1758977403865-f79e156415b3?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Upholstered Dining Chair Set",
+    "category": "Dining Room",
+    "description": "A coordinated dining table and upholstered chair set.",
+    "rentalPricePerMonth": 1299,
+    "stockQuantity": 2,
+    "imageUrl": "https://images.unsplash.com/photo-1758977403826-01e2c8a3f68f?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Compact Dining Table Set",
+    "category": "Dining Room",
+    "description": "A compact wood table and chairs suited to smaller dining areas.",
+    "rentalPricePerMonth": 799,
+    "stockQuantity": 3,
+    "imageUrl": "https://images.unsplash.com/photo-1738900737999-c7b0b26addc2?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Wooden Dining Table and Chairs",
+    "category": "Dining Room",
+    "description": "A classic dining table set in a bright, simple interior.",
+    "rentalPricePerMonth": 999,
+    "stockQuantity": 3,
+    "imageUrl": "https://images.unsplash.com/photo-1704040686446-428673c1c887?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "White Writing Desk",
+    "category": "Home Office",
+    "description": "A white writing desk paired with a gray chair.",
+    "rentalPricePerMonth": 499,
+    "stockQuantity": 4,
+    "imageUrl": "https://images.unsplash.com/photo-1613252036716-e1efc9788e5b?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Brown Wooden Writing Desk",
+    "category": "Home Office",
+    "description": "A compact brown wooden desk with a matching chair.",
+    "rentalPricePerMonth": 549,
+    "stockQuantity": 4,
+    "imageUrl": "https://images.unsplash.com/photo-1587540006503-581d37ea394d?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Computer Desk with Monitor",
+    "category": "Home Office",
+    "description": "A wood computer desk with a dedicated work surface.",
+    "rentalPricePerMonth": 599,
+    "stockQuantity": 3,
+    "imageUrl": "https://images.unsplash.com/photo-1708200216322-9463ac285552?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Workstation Desk and Chair",
+    "category": "Home Office",
+    "description": "A functional computer workstation with a coordinating chair.",
+    "rentalPricePerMonth": 699,
+    "stockQuantity": 3,
+    "imageUrl": "https://images.unsplash.com/photo-1656259145847-81bcdac8f0f3?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Glass-Top Writing Desk",
+    "category": "Home Office",
+    "description": "A modern desk with a glass top and wooden legs.",
+    "rentalPricePerMonth": 649,
+    "stockQuantity": 3,
+    "imageUrl": "https://images.unsplash.com/photo-1679309981674-cef0e23a7864?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Black Two-Drawer Desk",
+    "category": "Home Office",
+    "description": "A black desk with two drawers for a tidy work area.",
+    "rentalPricePerMonth": 599,
+    "stockQuantity": 3,
+    "imageUrl": "https://images.unsplash.com/photo-1724862873281-238213626373?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Vintage Typewriter Desk",
+    "category": "Home Office",
+    "description": "A classic writing desk styled with a typewriter.",
+    "rentalPricePerMonth": 499,
+    "stockQuantity": 2,
+    "imageUrl": "https://images.unsplash.com/photo-1640130541949-aa5d40f9635d?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Writing Desk with Task Lamp",
+    "category": "Home Office",
+    "description": "A simple desk and chair arranged with a focused task lamp.",
+    "rentalPricePerMonth": 549,
+    "stockQuantity": 3,
+    "imageUrl": "https://images.unsplash.com/photo-1718524767521-1aec8589115b?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Laptop Work Desk",
+    "category": "Home Office",
+    "description": "A practical wooden desk arranged for laptop work.",
+    "rentalPricePerMonth": 449,
+    "stockQuantity": 4,
+    "imageUrl": "https://images.unsplash.com/photo-1604074131665-7a4b13870ab4?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Study Desk with Plant Stand",
+    "category": "Home Office",
+    "description": "A desk and chair with space for a small plant or desk accessory.",
+    "rentalPricePerMonth": 499,
+    "stockQuantity": 3,
+    "imageUrl": "https://images.unsplash.com/photo-1719150006650-8255498a9faf?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Tufted Headboard Bed",
+    "category": "Bedroom",
+    "description": "A bed with a padded tufted headboard and a coordinated bedroom look.",
+    "rentalPricePerMonth": 1299,
+    "stockQuantity": 2,
+    "imageUrl": "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "White Cover Upholstered Bed",
+    "category": "Bedroom",
+    "description": "A neatly made bed with a soft white cover and pillows.",
+    "rentalPricePerMonth": 999,
+    "stockQuantity": 3,
+    "imageUrl": "https://images.unsplash.com/photo-1635594202056-9ea3b497e5c0?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Beige Bed Frame",
+    "category": "Bedroom",
+    "description": "A beige bed frame with a light mattress and understated styling.",
+    "rentalPricePerMonth": 1099,
+    "stockQuantity": 3,
+    "imageUrl": "https://images.unsplash.com/photo-1560185128-e173042f79dd?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "White Linen Bed",
+    "category": "Bedroom",
+    "description": "A bed dressed in crisp white linen for a calm bedroom.",
+    "rentalPricePerMonth": 999,
+    "stockQuantity": 3,
+    "imageUrl": "https://images.unsplash.com/photo-1617198998846-56e8a4c6e7b7?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Modern Wood-Accent Bed",
+    "category": "Bedroom",
+    "description": "A modern bedroom bed paired with warm wooden accents.",
+    "rentalPricePerMonth": 1199,
+    "stockQuantity": 2,
+    "imageUrl": "https://images.unsplash.com/photo-1757344454333-cc666252e596?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Platform Bed with White Sheets",
+    "category": "Bedroom",
+    "description": "A low platform bed with white sheets and a minimal frame.",
+    "rentalPricePerMonth": 899,
+    "stockQuantity": 3,
+    "imageUrl": "https://images.unsplash.com/photo-1631650120985-20791383127e?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "White Wooden Bed Frame",
+    "category": "Bedroom",
+    "description": "A white wood bed frame with a clean, simple design.",
+    "rentalPricePerMonth": 949,
+    "stockQuantity": 3,
+    "imageUrl": "https://images.unsplash.com/photo-1425219366480-47fdbbe0e83b?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Striped-Pillow Modern Bed",
+    "category": "Bedroom",
+    "description": "A modern bed styled with striped accent pillows.",
+    "rentalPricePerMonth": 1099,
+    "stockQuantity": 2,
+    "imageUrl": "https://images.unsplash.com/photo-1768253843445-49fa5f4a801f?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Walnut Bedside Table",
+    "category": "Bedroom",
+    "description": "A compact wooden bedside table with books on the lower shelf.",
+    "rentalPricePerMonth": 199,
+    "stockQuantity": 5,
+    "imageUrl": "https://images.unsplash.com/photo-1532372320572-cda25653a26d?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Bedside Table with Phone Shelf",
+    "category": "Bedroom",
+    "description": "A small bedside table with room for a phone and nightly essentials.",
+    "rentalPricePerMonth": 179,
+    "stockQuantity": 5,
+    "imageUrl": "https://images.unsplash.com/photo-1649194271420-b2ff52418a62?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Green-Seat Ergonomic Office Chair",
+    "category": "Office Room",
+    "description": "A supportive ergonomic task chair with a modern green seat.",
+    "rentalPricePerMonth": 549,
+    "stockQuantity": 4,
+    "imageUrl": "https://images.unsplash.com/photo-1750306957820-f778b67c4e13?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Oval Conference Table",
+    "category": "Office Room",
+    "description": "A large oval conference table with seating for team meetings.",
+    "rentalPricePerMonth": 1499,
+    "stockQuantity": 2,
+    "imageUrl": "https://images.unsplash.com/photo-1431540015161-0bf868a2d407?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Metal Office Filing Cabinet",
+    "category": "Office Room",
+    "description": "A compact filing cabinet for organizing office documents.",
+    "rentalPricePerMonth": 399,
+    "stockQuantity": 4,
+    "imageUrl": "https://images.unsplash.com/photo-1569235186275-626cb53b83ce?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Illuminated Reception Desk",
+    "category": "Office Room",
+    "description": "A contemporary reception desk with integrated display shelving.",
+    "rentalPricePerMonth": 1299,
+    "stockQuantity": 2,
+    "imageUrl": "https://images.unsplash.com/photo-1780146521619-8dcf88e8985d?auto=format&fit=crop&w=900&q=80"
+  },
+  {
+    "name": "Office Storage Cabinet",
+    "category": "Office Room",
+    "description": "A wooden office cabinet for printer supplies and everyday storage.",
+    "rentalPricePerMonth": 499,
+    "stockQuantity": 3,
+    "imageUrl": "https://images.unsplash.com/photo-1600422086908-72be2c8f5f3f?auto=format&fit=crop&w=900&q=80"
+  }
 ]

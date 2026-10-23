@@ -20,7 +20,7 @@ public class HomeController {
 
     @GetMapping("/")
     public String home(Model model) {
-        model.addAttribute("furnitureList", furnitureService.getCustomerCatalog());
+        model.addAttribute("trendingFurniture", furnitureService.getTrendingFurniture());
         model.addAttribute("categories", categoryService.getAllCategories());
         return "index";
     }

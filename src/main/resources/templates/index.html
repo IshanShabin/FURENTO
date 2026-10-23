@@ -88,13 +88,13 @@
         </div>
 
         <!-- If no furniture exists -->
-        <div th:if="${furnitureList.empty}" class="text-center text-muted py-5">
+        <div th:if="${trendingFurniture.empty}" class="text-center text-muted py-5">
           <i class="fas fa-box-open fa-3x mb-3 text-secondary"></i>
           <p>No furniture items added yet.</p>
         </div>
 
-        <div class="row g-4" th:unless="${furnitureList.empty}">
-          <div class="col-md-6 col-lg-3" th:each="item : ${furnitureList}">
+        <div class="row g-4" th:unless="${trendingFurniture.empty}">
+          <div class="col-md-6 col-lg-4" th:each="item : ${trendingFurniture}">
             <div class="card h-100 border-0">
               <div class="position-relative">
                 <img

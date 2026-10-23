@@ -23,6 +23,7 @@ public class DataSeeder implements CommandLineRunner {
 
         private static final String HOME_OFFICE_DESCRIPTION = "Ergonomic desks and chairs for comfortable, focused work at home.";
         private static final String OFFICE_ROOM_DESCRIPTION = "Functional office furniture for meetings, shared workspaces, and everyday organization.";
+        private static final String OFFICE_ROOM_IMAGE = "https://images.unsplash.com/photo-1758630737361-ca7532fb5e7f?auto=format&fit=crop&w=900&q=80";
 
     @Autowired
     private CategoryRepository categoryRepository;
@@ -48,6 +49,7 @@ public class DataSeeder implements CommandLineRunner {
                             "https://images.unsplash.com/photo-1617806118233-18e1de247200?auto=format&fit=crop&w=800&q=80"),
                     new Category("Home Office", HOME_OFFICE_DESCRIPTION,
                             "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?auto=format&fit=crop&w=800&q=80"),
+                    new Category("Office Room", OFFICE_ROOM_DESCRIPTION, OFFICE_ROOM_IMAGE),
                     new Category("Appliances", "Essential home appliances like refrigerators and washing machines.",
                             "https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?auto=format&fit=crop&w=800&q=80"));
 
@@ -57,6 +59,7 @@ public class DataSeeder implements CommandLineRunner {
 
                 ensureCatalogCategories();
                 updateOfficeDescriptions();
+                updateOfficeRoomImage();
                 seedFurniture();
                 retireSofa();
         }
@@ -66,7 +69,8 @@ public class DataSeeder implements CommandLineRunner {
                                 new Category("Living Room", "Chairs, tables, and storage for shared spaces.", ""),
                                 new Category("Bedroom", "Beds and bedside furniture.", ""),
                                 new Category("Dining Room", "Tables and chairs for dining spaces.", ""),
-                                new Category("Home Office", HOME_OFFICE_DESCRIPTION, ""));
+                                new Category("Home Office", HOME_OFFICE_DESCRIPTION, ""),
+                                new Category("Office Room", OFFICE_ROOM_DESCRIPTION, OFFICE_ROOM_IMAGE));
 
                 for (Category category : defaults) {
                         if (categoryRepository.findByNameIgnoreCase(category.getName()).isEmpty()) {
@@ -78,6 +82,15 @@ public class DataSeeder implements CommandLineRunner {
         private void updateOfficeDescriptions() {
                 updateCategoryDescription("Home Office", HOME_OFFICE_DESCRIPTION);
                 updateCategoryDescription("Office Room", OFFICE_ROOM_DESCRIPTION);
+        }
+
+        private void updateOfficeRoomImage() {
+                categoryRepository.findByNameIgnoreCase("Office Room").ifPresent(category -> {
+                        if (!OFFICE_ROOM_IMAGE.equals(category.getImageUrl())) {
+                                category.setImageUrl(OFFICE_ROOM_IMAGE);
+                                categoryRepository.save(category);
+                        }
+                });
         }
 
         private void updateCategoryDescription(String name, String description) {
