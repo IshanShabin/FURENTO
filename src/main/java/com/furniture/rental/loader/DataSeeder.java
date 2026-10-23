@@ -21,6 +21,8 @@ import java.util.List;
 @Component
 public class DataSeeder implements CommandLineRunner {
 
+        private static final String OFFICE_DESCRIPTION = "A calm, practical workspace with ergonomic desks and comfortable chairs for focused work.";
+
     @Autowired
     private CategoryRepository categoryRepository;
 
@@ -43,7 +45,7 @@ public class DataSeeder implements CommandLineRunner {
                             "https://images.unsplash.com/photo-1505693416388-b0346ef4174b?auto=format&fit=crop&w=800&q=80"),
                     new Category("Dining Room", "Elegant dining tables and chairs for family meals.",
                             "https://images.unsplash.com/photo-1617806118233-18e1de247200?auto=format&fit=crop&w=800&q=80"),
-                    new Category("Home Office", "Ergonomic desks and chairs for maximum productivity.",
+                    new Category("Home Office", OFFICE_DESCRIPTION,
                             "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?auto=format&fit=crop&w=800&q=80"),
                     new Category("Appliances", "Essential home appliances like refrigerators and washing machines.",
                             "https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?auto=format&fit=crop&w=800&q=80"));
@@ -53,6 +55,7 @@ public class DataSeeder implements CommandLineRunner {
         }
 
                 ensureCatalogCategories();
+                updateOfficeDescriptions();
                 seedFurniture();
                 retireSofa();
         }
@@ -62,12 +65,23 @@ public class DataSeeder implements CommandLineRunner {
                                 new Category("Living Room", "Chairs, tables, and storage for shared spaces.", ""),
                                 new Category("Bedroom", "Beds and bedside furniture.", ""),
                                 new Category("Dining Room", "Tables and chairs for dining spaces.", ""),
-                                new Category("Home Office", "Desks and furniture for focused work.", ""));
+                                new Category("Home Office", OFFICE_DESCRIPTION, ""));
 
                 for (Category category : defaults) {
                         if (categoryRepository.findByNameIgnoreCase(category.getName()).isEmpty()) {
                                 categoryRepository.save(category);
                         }
+                }
+        }
+
+        private void updateOfficeDescriptions() {
+                for (String name : List.of("Office Room", "Home Office")) {
+                        categoryRepository.findByNameIgnoreCase(name).ifPresent(category -> {
+                                if (!OFFICE_DESCRIPTION.equals(category.getDescription())) {
+                                        category.setDescription(OFFICE_DESCRIPTION);
+                                        categoryRepository.save(category);
+                                }
+                        });
                 }
         }
 
