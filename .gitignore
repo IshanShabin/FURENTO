@@ -1,0 +1,24 @@
+# Eclipse metadata
+.metadata/
+**/.settings/
+**/.classpath
+**/.project
+
+# Build files
+**/target/
+
+# Duplicate and backup files
+*.zip
+furniture-rental-system.zip_expanded/
+
+# IDE files
+.vscode/
+
+# Logs
+*.log
+
+# Secrets
+.env
+.env.*
+**/application-local.properties
+**/application-local.yml
