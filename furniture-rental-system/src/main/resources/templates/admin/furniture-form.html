@@ -16,6 +16,12 @@
           </h4>
         </div>
         <div class="card-body p-4">
+          <div
+            class="alert alert-danger"
+            role="alert"
+            th:if="${imageError}"
+            th:text="${imageError}"
+          ></div>
           <form
             th:action="@{/admin/furniture/save}"
             th:object="${furniture}"
@@ -115,18 +121,19 @@
             </div>
 
             <div class="mb-4">
-              <label for="imageFile" class="form-label fw-bold"
-                >Furniture Image</label
+              <label for="imageFiles" class="form-label fw-bold"
+                >Product images</label
               >
               <input
                 class="form-control"
                 type="file"
-                id="imageFile"
-                name="imageFile"
-                accept="image/*"
+                id="imageFiles"
+                name="imageFiles"
+                accept="image/jpeg,image/png"
+                multiple
               />
               <small class="text-muted"
-                >Upload a product image for this furniture item.</small
+                >JPG or PNG, up to 5 MB per image.</small
               >
             </div>
 
@@ -151,6 +158,36 @@
               </button>
             </div>
           </form>
+
+          <section
+            class="mt-4"
+            th:if="${furniture.id != null and furniture.images != null and !furniture.images.empty}"
+          >
+            <h5 class="fw-bold mb-3">Current images</h5>
+            <div class="row g-3">
+              <div class="col-6 col-md-4" th:each="image : ${furniture.images}">
+                <div class="border rounded p-2">
+                  <img
+                    th:src="${image.imageUrl}"
+                    th:alt="${furniture.name}"
+                    class="img-fluid rounded mb-2"
+                    style="width: 100%; height: 140px; object-fit: cover"
+                  />
+                  <form
+                    method="post"
+                    th:action="@{'/admin/furniture/' + ${furniture.id} + '/images/' + ${image.id} + '/delete'}"
+                  >
+                    <button
+                      class="btn btn-sm btn-outline-danger w-100"
+                      type="submit"
+                    >
+                      Remove image
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
     </div>

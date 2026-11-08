@@ -5,6 +5,7 @@ import com.furniture.rental.entity.Furniture;
 import com.furniture.rental.entity.FurnitureImage;
 import com.furniture.rental.entity.Rental;
 import com.furniture.rental.service.CategoryService;
+import com.furniture.rental.service.FurnitureImageStorageService;
 import com.furniture.rental.service.FurnitureService;
 import com.furniture.rental.service.RentalService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,14 +13,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
 
 @Controller
 @RequestMapping("/admin")
@@ -33,6 +32,9 @@ public class AdminController {
 
     @Autowired
     private RentalService rentalService;
+
+    @Autowired
+    private FurnitureImageStorageService furnitureImageStorageService;
 
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
@@ -126,57 +128,90 @@ public class AdminController {
     }
 
     @PostMapping("/furniture/save")
-    public String saveFurniture(@ModelAttribute Furniture furniture,
+    public String saveFurniture(@ModelAttribute Furniture form,
             @RequestParam("categoryId") Long categoryId,
-            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile) {
-        if (categoryId != null) {
-            furniture.setCategory(categoryService.getCategoryById(categoryId));
-        }
-
-        if (imageFile != null && !imageFile.isEmpty()) {
-            try {
-                Path uploadDir = Path.of("src/main/resources/static/images/furniture");
-                Files.createDirectories(uploadDir);
-                String fileName = UUID.randomUUID() + "-" + imageFile.getOriginalFilename();
-                Path targetPath = uploadDir.resolve(fileName);
-                imageFile.transferTo(targetPath);
-
-                FurnitureImage image = new FurnitureImage();
-                image.setImageUrl("/images/furniture/" + fileName);
-                image.setFurniture(furniture);
-
-                if (furniture.getImages() == null) {
-                    furniture.setImages(new ArrayList<>());
-                }
-                furniture.getImages().clear();
-                furniture.getImages().add(image);
-            } catch (IOException e) {
-                throw new IllegalStateException("Failed to upload furniture image", e);
+            @RequestParam(value = "imageFiles", required = false) List<MultipartFile> uploads,
+            RedirectAttributes redirectAttributes) {
+        Furniture furniture = form;
+        if (form.getId() != null) {
+            furniture = furnitureService.getFurnitureById(form.getId());
+            if (furniture == null) {
+                return "redirect:/admin/furniture";
             }
+            furniture.setName(form.getName());
+            furniture.setDescription(form.getDescription());
+            furniture.setRentalPricePerMonth(form.getRentalPricePerMonth());
+            furniture.setPurchasePrice(form.getPurchasePrice());
+            furniture.setStockQuantity(form.getStockQuantity());
         }
 
-        if (furniture.getId() != null) {
-            Furniture existing = furnitureService.getFurnitureById(furniture.getId());
-            if (existing != null) {
-                existing.setName(furniture.getName());
-                existing.setDescription(furniture.getDescription());
-                existing.setRentalPricePerMonth(furniture.getRentalPricePerMonth());
-                existing.setPurchasePrice(furniture.getPurchasePrice());
-                existing.setStockQuantity(furniture.getStockQuantity());
-                existing.setAvailable(furniture.getStockQuantity() > 0);
-                existing.setCategory(furniture.getCategory());
-                if (furniture.getImages() != null && !furniture.getImages().isEmpty()) {
-                    existing.setImages(furniture.getImages());
-                    for (FurnitureImage image : existing.getImages()) {
-                        image.setFurniture(existing);
+        Category category = categoryService.getCategoryById(categoryId);
+        if (category == null) {
+            redirectAttributes.addFlashAttribute("imageError", "Choose a valid furniture category.");
+            return "redirect:/admin/furniture";
+        }
+        furniture.setCategory(category);
+        furniture = furnitureService.saveFurniture(furniture);
+
+        List<String> storedFiles = new ArrayList<>();
+        try {
+            if (uploads != null) {
+                for (MultipartFile upload : uploads) {
+                    if (upload == null || upload.isEmpty()) {
+                        continue;
                     }
+                    String imageUrl = furnitureImageStorageService.store(upload);
+                    storedFiles.add(imageUrl);
+                    FurnitureImage image = new FurnitureImage();
+                    image.setImageUrl(imageUrl);
+                    image.setFurniture(furniture);
+                    if (furniture.getImages() == null) {
+                        furniture.setImages(new ArrayList<>());
+                    }
+                    furniture.getImages().add(image);
                 }
-                furnitureService.saveFurniture(existing);
+                if (!storedFiles.isEmpty()) {
+                    furnitureService.saveFurniture(furniture);
+                }
             }
-        } else {
-            furnitureService.saveFurniture(furniture);
+        } catch (IOException | IllegalArgumentException exception) {
+            for (String imageUrl : storedFiles) {
+                try {
+                    furnitureImageStorageService.deleteManagedImage(imageUrl);
+                } catch (IOException ignored) {
+                    // The unreferenced file can be removed from the upload folder later.
+                }
+            }
+            redirectAttributes.addFlashAttribute("imageError", exception.getMessage());
+            return "redirect:/admin/furniture/edit/" + furniture.getId();
         }
         return "redirect:/admin/furniture";
+    }
+
+    @PostMapping("/furniture/{furnitureId}/images/{imageId}/delete")
+    public String deleteFurnitureImage(@PathVariable Long furnitureId, @PathVariable Long imageId,
+            RedirectAttributes redirectAttributes) {
+        Furniture furniture = furnitureService.getFurnitureById(furnitureId);
+        if (furniture == null || furniture.getImages() == null) {
+            return "redirect:/admin/furniture";
+        }
+        FurnitureImage image = furniture.getImages().stream()
+                .filter(candidate -> imageId.equals(candidate.getId()))
+                .findFirst()
+                .orElse(null);
+        if (image == null) {
+            return "redirect:/admin/furniture/edit/" + furnitureId;
+        }
+
+        String imageUrl = image.getImageUrl();
+        furniture.getImages().remove(image);
+        furnitureService.saveFurniture(furniture);
+        try {
+            furnitureImageStorageService.deleteManagedImage(imageUrl);
+        } catch (IOException exception) {
+            redirectAttributes.addFlashAttribute("imageError", "Image removed from the product, but its file could not be deleted.");
+        }
+        return "redirect:/admin/furniture/edit/" + furnitureId;
     }
 
     // Rentals

@@ -197,6 +197,8 @@
       const placeOrderButton = checkoutForm.querySelector(
         'button[type="submit"]'
       );
+      const csrfToken =
+        checkoutForm.querySelector('input[name="_csrf"]')?.value || "";
 
       checkoutForm.addEventListener("submit", async (event) => {
         if (
@@ -213,7 +215,10 @@
         try {
           const orderResponse = await fetch("/cart/create-payment-order", {
             method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+              "X-XSRF-TOKEN": csrfToken,
+            },
             body: new URLSearchParams(new FormData(checkoutForm)),
           });
           const order = await orderResponse.json();
@@ -237,6 +242,7 @@
                     method: "POST",
                     headers: {
                       "Content-Type": "application/x-www-form-urlencoded",
+                      "X-XSRF-TOKEN": csrfToken,
                     },
                     body: new URLSearchParams(response),
                   }

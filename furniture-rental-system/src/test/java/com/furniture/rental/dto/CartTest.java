@@ -31,4 +31,17 @@ class CartTest {
 
         assertTrue(ex.getMessage().contains("available stock"));
     }
+
+    @Test
+    void addItemShouldCountStockAcrossDifferentRentalDurations() {
+        Cart cart = new Cart();
+        cart.addItem(new CartItem(15L, "Table", new BigDecimal("300"), 2, 1), 3);
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> cart.addItem(new CartItem(15L, "Table", new BigDecimal("300"), 2, 3), 3));
+
+        assertTrue(ex.getMessage().contains("available stock"));
+        assertEquals(1, cart.getItems().size());
+        assertEquals(2, cart.getItems().get(0).getQuantity());
+    }
 }

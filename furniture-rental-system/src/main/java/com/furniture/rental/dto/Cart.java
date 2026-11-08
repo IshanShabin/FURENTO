@@ -39,10 +39,9 @@ public class Cart {
 
         int existingQuantity = items.stream()
                 .filter(existing -> existing.getFurnitureId() != null
-                        && existing.getFurnitureId().equals(item.getFurnitureId())
-                        && existing.getRentalPeriodMonths() == item.getRentalPeriodMonths())
-                .mapToInt(CartItem::getQuantity)
-                .sum();
+                && existing.getFurnitureId().equals(item.getFurnitureId()))
+            .mapToInt(CartItem::getQuantity)
+            .sum();
 
         if (existingQuantity + item.getQuantity() > availableStock) {
             throw new IllegalArgumentException("Requested quantity exceeds available stock");
@@ -55,6 +54,7 @@ public class Cart {
                 existing.setQuantity(existing.getQuantity() + item.getQuantity());
                 existing.setFurnitureName(item.getFurnitureName());
                 existing.setPricePerMonth(item.getPricePerMonth());
+                existing.setImageUrl(item.getImageUrl());
                 return;
             }
         }

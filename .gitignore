@@ -22,3 +22,13 @@ furniture-rental-system.zip_expanded/
 .env.*
 **/application-local.properties
 **/application-local.yml
+
+# Runtime product uploads
+**/uploads/furniture/
+
+# Compiled Java files
+*.class
+
+# Temporary files
+*.tmp
+*.bak

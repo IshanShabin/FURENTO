@@ -21,11 +21,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -70,9 +72,10 @@ public class CartController {
     public String addToCart(@RequestParam Long furnitureId,
             @RequestParam int quantity,
             @RequestParam int months,
-            HttpSession session) {
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
         Furniture f = furnitureService.getFurnitureById(furnitureId);
-        if (f != null && quantity > 0) {
+        if (f != null && quantity > 0 && months > 0) {
             Cart cart = (Cart) session.getAttribute("cart");
             if (cart == null) {
                 cart = new Cart();
@@ -81,12 +84,12 @@ public class CartController {
 
             int existingQuantity = cart.getItems().stream()
                     .filter(item -> item.getFurnitureId() != null
-                            && item.getFurnitureId().equals(f.getId())
-                            && item.getRentalPeriodMonths() == months)
+                        && item.getFurnitureId().equals(f.getId()))
                     .mapToInt(CartItem::getQuantity)
                     .sum();
 
             if (existingQuantity + quantity > f.getStockQuantity()) {
+                redirectAttributes.addFlashAttribute("cartError", "Requested quantity exceeds available stock.");
                 return "redirect:/cart";
             }
 
@@ -97,19 +100,29 @@ public class CartController {
 
             cart.addItem(new CartItem(f.getId(), f.getName(), f.getRentalPricePerMonth(), quantity, months, imageUrl),
                     f.getStockQuantity());
+        } else {
+                redirectAttributes.addFlashAttribute("cartError", "Choose an available item and a valid quantity and duration.");
         }
         return "redirect:/cart";
     }
 
     @GetMapping("/update/{index}")
-    public String updateCartQuantity(@PathVariable int index, @RequestParam String action, HttpSession session) {
+    public String updateCartQuantity(@PathVariable int index, @RequestParam String action, HttpSession session,
+            RedirectAttributes redirectAttributes) {
         Cart cart = (Cart) session.getAttribute("cart");
         if (cart != null && index >= 0 && index < cart.getItems().size()) {
             CartItem item = cart.getItems().get(index);
             Furniture furniture = furnitureService.getFurnitureById(item.getFurnitureId());
             if ("increase".equals(action) && furniture != null) {
-                if (item.getQuantity() + 1 <= furniture.getStockQuantity()) {
+                int quantityForProduct = cart.getItems().stream()
+                    .filter(cartItem -> cartItem.getFurnitureId() != null
+                        && cartItem.getFurnitureId().equals(item.getFurnitureId()))
+                    .mapToInt(CartItem::getQuantity)
+                    .sum();
+                if (quantityForProduct < furniture.getStockQuantity()) {
                     item.setQuantity(item.getQuantity() + 1);
+                } else {
+                    redirectAttributes.addFlashAttribute("cartError", "Requested quantity exceeds available stock.");
                 }
             } else if ("decrease".equals(action)) {
                 if (item.getQuantity() > 1) {
@@ -158,7 +171,8 @@ public class CartController {
             @RequestParam String zipCode,
             @RequestParam String paymentMethod,
             HttpSession session,
-            Authentication auth) {
+            Authentication auth,
+            RedirectAttributes redirectAttributes) {
 
         if (!"COD".equals(paymentMethod)) {
             return "redirect:/cart/checkout";
@@ -169,12 +183,20 @@ public class CartController {
             return "redirect:/cart";
         }
 
+        List<CartItem> validatedItems;
+        try {
+            validatedItems = getPricedOrderItems(cart);
+        } catch (IllegalArgumentException exception) {
+            redirectAttributes.addFlashAttribute("cartError", exception.getMessage());
+            return "redirect:/cart";
+        }
+
         User user = userService.findByUsername(auth.getName());
         Payment payment = new Payment();
         payment.setPaymentMethod("COD");
         payment.setPaymentDate(LocalDateTime.now());
         payment.setStatus("PENDING");
-        createRental(user, cart.getItems(), addressLine1, addressLine2, city, state, zipCode, payment);
+        createRental(user, validatedItems, addressLine1, addressLine2, city, state, zipCode, payment);
 
         session.removeAttribute("cart");
         return "redirect:/customer/dashboard";
@@ -267,13 +289,18 @@ public class CartController {
 
     private List<CartItem> getPricedOrderItems(Cart cart) {
         List<CartItem> items = new ArrayList<>();
+        Map<Long, Integer> requestedQuantities = new HashMap<>();
         for (CartItem item : cart.getItems()) {
             if (item.getQuantity() <= 0 || item.getRentalPeriodMonths() <= 0) {
                 throw new IllegalArgumentException("Invalid cart quantity or rental period");
             }
             Furniture furniture = furnitureService.getFurnitureById(item.getFurnitureId());
-            if (furniture == null || furniture.getStockQuantity() < item.getQuantity()) {
+            if (furniture == null) {
                 throw new IllegalArgumentException("Furniture is unavailable");
+            }
+            int requestedQuantity = requestedQuantities.merge(furniture.getId(), item.getQuantity(), Integer::sum);
+            if (furniture.getStockQuantity() < requestedQuantity) {
+                throw new IllegalArgumentException("Requested quantity exceeds available stock for " + furniture.getName());
             }
             items.add(new CartItem(furniture.getId(), furniture.getName(), furniture.getRentalPricePerMonth(),
                     item.getQuantity(), item.getRentalPeriodMonths()));

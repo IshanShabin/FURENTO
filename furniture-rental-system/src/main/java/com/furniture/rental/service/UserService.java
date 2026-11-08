@@ -22,15 +22,7 @@ public class UserService {
         if (user.getPassword() == null || user.getPassword().isBlank()) {
             throw new IllegalArgumentException("Password is required");
         }
-
-        String normalizedRole = user.getRole();
-        if (normalizedRole == null || normalizedRole.isBlank()) {
-            normalizedRole = "CUSTOMER";
-        }
-        if (normalizedRole.startsWith("ROLE_")) {
-            normalizedRole = normalizedRole.substring(5);
-        }
-        user.setRole(normalizedRole);
+        user.setRole("CUSTOMER");
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
     }
