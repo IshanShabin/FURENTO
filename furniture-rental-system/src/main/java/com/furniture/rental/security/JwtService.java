@@ -9,9 +9,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Map;
+
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
+
+import com.furniture.rental.entity.RevokedToken;
+import com.furniture.rental.repository.RevokedTokenRepository;
+import org.springframework.context.annotation.Lazy;
+import java.time.Instant;
+
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -22,18 +27,20 @@ public class JwtService {
     public static final String AUTH_COOKIE = "FURENTO_AUTH";
     private static final long JWT_EXPIRY_MS = 86_400_000L;
     private final SecretKey signingKey;
-    private final Map<String, Date> revokedTokens = new ConcurrentHashMap<>();
+    private final RevokedTokenRepository revokedTokenRepository;    
     private final boolean secureCookie;
 
     public JwtService(@Value("${JWT_SECRET:}") String jwtSecret,
-            @Value("${app.jwt.cookie-secure:false}") boolean secureCookie) {
-        byte[] secretBytes = jwtSecret == null ? new byte[0] : jwtSecret.getBytes(StandardCharsets.UTF_8);
-        if (secretBytes.length < 32) {
-            throw new IllegalStateException("Set JWT_SECRET to a private value of at least 32 characters.");
-        }
-        this.signingKey = Keys.hmacShaKeyFor(secretBytes);
-        this.secureCookie = secureCookie;
+        @Value("${app.jwt.cookie-secure:false}") boolean secureCookie,
+        @Lazy RevokedTokenRepository revokedTokenRepository) {
+    byte[] secretBytes = jwtSecret == null ? new byte[0] : jwtSecret.getBytes(StandardCharsets.UTF_8);
+    if (secretBytes.length < 32) {
+        throw new IllegalStateException("Set JWT_SECRET to a private value of at least 32 characters.");
     }
+    this.signingKey = Keys.hmacShaKeyFor(secretBytes);
+    this.secureCookie = secureCookie;
+    this.revokedTokenRepository = revokedTokenRepository;
+}
 
     public String generateToken(UserDetails userDetails) {
         Date now = new Date();
@@ -86,21 +93,20 @@ public class JwtService {
     }
 
     public void revokeToken(String token) {
-        try {
-            Claims claims = parseClaims(token);
-            if (claims.getId() != null) {
-                revokedTokens.put(claims.getId(), claims.getExpiration());
-            }
-        } catch (Exception ignored) {
-        // invalid or already expired tokens need no revoking
+    try {
+        Claims claims = parseClaims(token);
+        if (claims.getId() != null) {
+            revokedTokenRepository.save(new RevokedToken(claims.getId(), claims.getExpiration().toInstant()));
         }
-        Date now = new Date();
-        revokedTokens.values().removeIf(expiry -> expiry.before(now));
+    } catch (Exception ignored) {
+        // invalid or already expired tokens need no revoking
     }
+    revokedTokenRepository.deleteByExpiresAtBefore(Instant.now());
+}
 
-    private boolean isRevoked(String tokenId) {
-        return tokenId != null && revokedTokens.containsKey(tokenId);
-    }
+private boolean isRevoked(String tokenId) {
+    return tokenId != null && revokedTokenRepository.existsById(tokenId);
+}
 
     public String resolveToken(HttpServletRequest request) {
     String header = request.getHeader("Authorization");

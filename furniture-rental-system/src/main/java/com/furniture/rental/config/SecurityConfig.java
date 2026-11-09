@@ -6,6 +6,7 @@ import com.furniture.rental.security.JwtAuthenticationFilter;
 import com.furniture.rental.security.JwtService;
 import com.furniture.rental.security.LegacyAwarePasswordEncoder;
 import com.furniture.rental.service.CustomUserDetailsService;
+import com.furniture.rental.security.JsonAccessDeniedHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -91,11 +92,12 @@ public class SecurityConfig {
     response.addHeader(HttpHeaders.SET_COOKIE, jwtService.clearAuthCookie().toString());
     response.sendRedirect("/");
 }))
-                .exceptionHandling(exception -> exception
-        .authenticationEntryPoint(entryPoint()))
-                .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        return http.build();
+               .exceptionHandling(exception -> exception
+            .authenticationEntryPoint(entryPoint())
+            .accessDeniedHandler(new JsonAccessDeniedHandler()))
+            .authenticationProvider(authenticationProvider)
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                return http.build();
     }
 
     @Bean
