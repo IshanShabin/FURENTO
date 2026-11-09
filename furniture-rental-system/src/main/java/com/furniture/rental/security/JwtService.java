@@ -7,7 +7,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -18,6 +22,7 @@ public class JwtService {
     public static final String AUTH_COOKIE = "FURENTO_AUTH";
     private static final long JWT_EXPIRY_MS = 86_400_000L;
     private final SecretKey signingKey;
+    private final Map<String, Date> revokedTokens = new ConcurrentHashMap<>();
     private final boolean secureCookie;
 
     public JwtService(@Value("${JWT_SECRET:}") String jwtSecret,
@@ -35,6 +40,8 @@ public class JwtService {
         Date expiry = new Date(now.getTime() + JWT_EXPIRY_MS);
 
         return Jwts.builder()
+                .id(UUID.randomUUID().toString())
+                .subject(userDetails.getUsername()) //same as below
                 .subject(userDetails.getUsername())
                 .claim("roles", userDetails.getAuthorities().stream()
                         .map(authority -> authority.getAuthority())
@@ -72,10 +79,43 @@ public class JwtService {
     public boolean validateToken(String token) {
         try {
             Claims claims = parseClaims(token);
-            return claims.getExpiration().after(new Date());
+            return claims.getExpiration().after(new Date()) && !isRevoked(claims.getId());
         } catch (Exception ex) {
             return false;
         }
+    }
+
+    public void revokeToken(String token) {
+        try {
+            Claims claims = parseClaims(token);
+            if (claims.getId() != null) {
+                revokedTokens.put(claims.getId(), claims.getExpiration());
+            }
+        } catch (Exception ignored) {
+        // invalid or already expired tokens need no revoking
+        }
+        Date now = new Date();
+        revokedTokens.values().removeIf(expiry -> expiry.before(now));
+    }
+
+    private boolean isRevoked(String tokenId) {
+        return tokenId != null && revokedTokens.containsKey(tokenId);
+    }
+
+    public String resolveToken(HttpServletRequest request) {
+    String header = request.getHeader("Authorization");
+    if (header != null && header.startsWith("Bearer ")) {
+        return header.substring(7);
+    }
+    Cookie[] cookies = request.getCookies();
+    if (cookies != null) {
+        for (Cookie cookie : cookies) {
+            if (AUTH_COOKIE.equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+    }
+    return null;
     }
 
     private Claims parseClaims(String token) {

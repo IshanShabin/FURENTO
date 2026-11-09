@@ -33,7 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
 
-        String token = resolveToken(request);
+        String token = jwtService.resolveToken(request);
         if (token != null && SecurityContextHolder.getContext().getAuthentication() == null
                 && jwtService.validateToken(token)) {
             try {
@@ -51,19 +51,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private String resolveToken(HttpServletRequest request) {
-        String authorizationHeader = request.getHeader("Authorization");
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            return authorizationHeader.substring(7);
-        }
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (JwtService.AUTH_COOKIE.equals(cookie.getName())) {
-                    return cookie.getValue();
-                }
-            }
-        }
-        return null;
-    }
+    // private String resolveToken(HttpServletRequest request) {
+    //     String authorizationHeader = request.getHeader("Authorization");
+    //     if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+    //         return authorizationHeader.substring(7);
+    //     }
+    //     Cookie[] cookies = request.getCookies();
+    //     if (cookies != null) {
+    //         for (Cookie cookie : cookies) {
+    //             if (JwtService.AUTH_COOKIE.equals(cookie.getName())) {
+    //                 return cookie.getValue();
+    //             }
+    //         }
+    //     }
+    //     return null;
+    // }
 }

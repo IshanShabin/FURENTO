@@ -1,6 +1,9 @@
 package com.furniture.rental.controller;
 
 import com.furniture.rental.security.JwtService;
+
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +43,15 @@ public ResponseEntity<Map<String, String>> login(@RequestParam String username,
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("message", "Invalid username or password."));
     }
+}
+
+@PostMapping("/logout")
+public ResponseEntity<Map<String, String>> logout(HttpServletRequest request) {
+    String token = jwtService.resolveToken(request);
+    if (token != null) {
+        jwtService.revokeToken(token);
+    }
+    return ResponseEntity.ok(Map.of("message", "Logged out."));
 }
 
 }

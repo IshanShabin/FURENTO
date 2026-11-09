@@ -84,9 +84,13 @@ public class SecurityConfig {
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
                         .logoutSuccessHandler((request, response, authentication) -> {
-                            response.addHeader(HttpHeaders.SET_COOKIE, jwtService.clearAuthCookie().toString());
-                            response.sendRedirect("/");
-                        }))
+    String token = jwtService.resolveToken(request);
+    if (token != null) {
+        jwtService.revokeToken(token);
+    }
+    response.addHeader(HttpHeaders.SET_COOKIE, jwtService.clearAuthCookie().toString());
+    response.sendRedirect("/");
+}))
                 .exceptionHandling(exception -> exception
         .authenticationEntryPoint(entryPoint()))
                 .authenticationProvider(authenticationProvider)
