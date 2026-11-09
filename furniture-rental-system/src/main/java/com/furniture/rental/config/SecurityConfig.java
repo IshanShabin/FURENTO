@@ -24,6 +24,12 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import com.furniture.rental.security.JsonAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.DelegatingAuthenticationEntryPoint;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import java.util.LinkedHashMap;
 
 @Configuration
 @EnableWebSecurity
@@ -43,8 +49,12 @@ public class SecurityConfig {
             DaoAuthenticationProvider authenticationProvider) throws Exception {
         http
                 .csrf(csrf -> csrf
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .ignoringRequestMatchers("/api/auth/login"))
+        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+        .ignoringRequestMatchers("/api/auth/login")
+        .ignoringRequestMatchers(request -> {
+            String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+            return header != null && header.startsWith("Bearer ");
+        }))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers("/", "/home", "/register", "/login", "/css/**", "/js/**", "/images/**",
@@ -76,7 +86,7 @@ public class SecurityConfig {
                             response.sendRedirect("/");
                         }))
                 .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")))
+        .authenticationEntryPoint(entryPoint()))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
@@ -86,6 +96,14 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new LegacyAwarePasswordEncoder();
     }
+
+    private AuthenticationEntryPoint entryPoint() {
+    LinkedHashMap<RequestMatcher, AuthenticationEntryPoint> map = new LinkedHashMap<>();
+    map.put(new AntPathRequestMatcher("/api/**"), new JsonAuthenticationEntryPoint());
+    DelegatingAuthenticationEntryPoint entryPoint = new DelegatingAuthenticationEntryPoint(map);
+    entryPoint.setDefaultEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"));
+    return entryPoint;
+}
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
