@@ -12,6 +12,17 @@
       </div>
 
       <div
+        class="alert alert-success"
+        th:if="${rentalMessage}"
+        th:text="${rentalMessage}"
+      ></div>
+      <div
+        class="alert alert-warning"
+        th:if="${rentalError}"
+        th:text="${rentalError}"
+      ></div>
+
+      <div
         th:if="${rentals.empty}"
         style="
           text-align: center;
@@ -91,6 +102,17 @@
                   style="color: #007bff; text-decoration: none"
                   >View Details</a
                 >
+                <form
+                  th:if="${rental.status == 'PENDING'}"
+                  th:action="@{'/customer/rental/' + ${rental.id} + '/cancel'}"
+                  method="post"
+                  class="d-inline ms-3"
+                  onsubmit="return confirm('Cancel this rental?');"
+                >
+                  <button type="submit" class="btn btn-link text-danger p-0">
+                    Cancel
+                  </button>
+                </form>
               </td>
             </tr>
           </tbody>

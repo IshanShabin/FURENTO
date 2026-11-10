@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+//import java.util.Objects;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
@@ -77,25 +78,54 @@ public class RentalService {
         return rentalRepository.findById(id).orElse(null);
     }
 
-    public void deleteRental(Long id) {
-        // Ideally we should restore stock here before deleting
-        rentalRepository.deleteById(id);
+    @Transactional
+    public void updateStatus(Long id, String status) {
+    Rental rental = rentalRepository.findById(id).orElse(null);
+        if (rental == null) {
+            return;
+        }
+        if ("ACTIVE".equals(status) && !"PENDING".equals(rental.getStatus())) {
+            return;
+        }
+        rental.setStatus(status);
+        if ("ACTIVE".equals(status) && rental.getDelivery() != null) {
+           rental.getDelivery().setStatus("DELIVERED");
+        }
+        rentalRepository.save(rental);
+        rentalRepository.flush();
     }
 
     @Transactional
-    public void updateStatus(Long id, String status) {
-        Rental rental = rentalRepository.findById(id).orElse(null);
-        if (rental != null) {
-            rental.setStatus(status);
+    public boolean cancelRental(Long id) {
+    Rental rental = rentalRepository.findById(id).orElse(null);
+    if (rental == null) {
+        return false;
+    }
+    String status = rental.getStatus();
+    if ("CANCELLED".equals(status) || "RETURNED".equals(status)) {
+        return false;
+    }
 
-            // Auto-update delivery status for demo purposes
-            if ("ACTIVE".equals(status) && rental.getDelivery() != null) {
-                rental.getDelivery().setStatus("DELIVERED");
-            }
-
-            rentalRepository.save(rental);
-            rentalRepository.flush(); // Force write to DB
-            System.out.println("Rental " + id + " status updated to " + status);
+    if (rental.getItems() != null) {
+        for (RentalItem item : rental.getItems()) {
+            Furniture furniture = item.getFurniture();
+            furniture.setStockQuantity(furniture.getStockQuantity() + item.getQuantity());
+            furnitureRepository.save(furniture);
         }
+    }
+
+        rental.setStatus("CANCELLED");
+        if (rental.getDelivery() != null) {
+            rental.getDelivery().setStatus("CANCELLED");
+        }
+        if (rental.getPayment() != null && "PENDING".equals(rental.getPayment().getStatus())) {
+            rental.getPayment().setStatus("CANCELLED");
+        }
+        rentalRepository.save(rental);
+        return true;
+    }
+
+        public Rental saveRental(Rental rental) {
+        return rentalRepository.save(rental);
     }
 }

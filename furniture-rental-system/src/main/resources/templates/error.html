@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head th:replace="~{layout :: head('Page not found')}"></head>
+  <body>
+    <div th:replace="~{layout :: navbar}"></div>
+    <div class="container text-center py-5">
+      <h1 class="display-4 fw-bold">Something went wrong</h1>
+      <p class="lead text-muted">
+        The page you asked for doesn't exist or isn't available.
+      </p>
+      <a href="/" class="btn btn-primary rounded-pill px-4">Back to home</a>
+    </div>
+    <div th:replace="~{layout :: footer}"></div>
+  </body>
+</html>

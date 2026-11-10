@@ -8,6 +8,17 @@
     <div class="container" style="padding: 20px">
       <h2>All Rentals</h2>
 
+      <div
+        class="alert alert-success mt-3"
+        th:if="${rentalMessage}"
+        th:text="${rentalMessage}"
+      ></div>
+      <div
+        class="alert alert-warning mt-3"
+        th:if="${rentalError}"
+        th:text="${rentalError}"
+      ></div>
+
       <table style="width: 100%; border-collapse: collapse; margin-top: 20px">
         <thead>
           <tr
@@ -44,17 +55,31 @@
             </td>
             <td style="padding: 12px" th:text="${rental.status}">ACTIVE</td>
             <td style="padding: 12px">
-              <a
+              <form
                 th:if="${rental.status == 'PENDING'}"
-                th:href="@{'/admin/rentals/accept/' + ${rental.id}}"
-                class="btn btn-sm btn-success me-2"
-                >Accept</a
+                th:action="@{'/admin/rentals/accept/' + ${rental.id}}"
+                method="post"
+                class="d-inline"
               >
-              <a
-                th:href="@{'/admin/rentals/delete/' + ${rental.id}}"
-                class="btn btn-sm btn-danger"
-                onclick="return confirm('Are you sure you want to cancel/delete this rental?');"
-                >Cancel</a
+                <button type="submit" class="btn btn-sm btn-success me-2">
+                  Accept
+                </button>
+              </form>
+              <form
+                th:if="${rental.status == 'PENDING' or rental.status == 'ACTIVE'}"
+                th:action="@{'/admin/rentals/cancel/' + ${rental.id}}"
+                method="post"
+                class="d-inline"
+                onsubmit="return confirm('Cancel this rental and return its items to stock?');"
+              >
+                <button type="submit" class="btn btn-sm btn-danger">
+                  Cancel
+                </button>
+              </form>
+              <span
+                th:if="${rental.status == 'CANCELLED' or rental.status == 'RETURNED'}"
+                class="text-muted"
+                >&mdash;</span
               >
             </td>
           </tr>

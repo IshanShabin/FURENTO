@@ -234,16 +234,25 @@ public class AdminController {
         return "redirect:/admin/furniture";
     }
 
-    @GetMapping("/rentals/delete/{id}") // In reality, this might be convert to 'cancel'
-    public String deleteRental(@PathVariable Long id) {
-        // Implement logic to possibly return stock if needed, or soft delete
-        rentalService.deleteRental(id);
-        return "redirect:/admin/rentals";
-    }
 
-    @GetMapping("/rentals/accept/{id}")
-    public String acceptRental(@PathVariable Long id) {
-        rentalService.updateStatus(id, "ACTIVE");
-        return "redirect:/admin/rentals";
+    @PostMapping("/rentals/accept/{id}")
+public String acceptRental(@PathVariable Long id) {
+    rentalService.updateStatus(id, "ACTIVE");
+    return "redirect:/admin/rentals";
+}
+
+@PostMapping("/rentals/cancel/{id}")
+public String cancelRental(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    Rental rental = rentalService.getRentalById(id);
+    boolean paidOnline = rental != null && rental.getPayment() != null
+            && "PAID".equals(rental.getPayment().getStatus());
+    if (rentalService.cancelRental(id)) {
+        redirectAttributes.addFlashAttribute("rentalMessage", paidOnline
+                ? "Rental cancelled and stock restored. This order was paid online, so refund it manually in Razorpay."
+                : "Rental cancelled and stock restored.");
+    } else {
+        redirectAttributes.addFlashAttribute("rentalError", "This rental can't be cancelled.");
     }
+    return "redirect:/admin/rentals";
+}
 }

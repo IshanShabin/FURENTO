@@ -11,6 +11,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -54,10 +56,32 @@ public class CustomerController {
         if ("ACTIVE".equals(rental.getStatus()) && rental.getDelivery() != null
                 && "PENDING".equals(rental.getDelivery().getStatus())) {
             rental.getDelivery().setStatus("DELIVERED");
-            rentalService.createRental(rental); // Re-saving to persist the fix (createRental acts as save here)
+            rentalService.saveRental(rental); // Re-saving to persist the fix (saveRental acts as save here)
         }
 
         model.addAttribute("rental", rental);
         return "customer/invoice";
     }
+
+        @PostMapping("/rental/{id}/cancel")
+        public String cancelRental(@PathVariable Long id, Authentication auth,
+        RedirectAttributes redirectAttributes) {
+        Rental rental = rentalService.getRentalById(id);
+        if (rental == null || !rental.getUser().getUsername().equals(auth.getName())) {
+        return "redirect:/customer/dashboard";
+        }
+        boolean paidOnline = rental.getPayment() != null && "PAID".equals(rental.getPayment().getStatus());
+        if (!"PENDING".equals(rental.getStatus())) {
+        redirectAttributes.addFlashAttribute("rentalError", "Only pending rentals can be cancelled.");
+        } else if (paidOnline) {
+        redirectAttributes.addFlashAttribute("rentalError",
+                "Paid orders can't be cancelled online yet. Please contact support@furento.com.");
+        } else if (rentalService.cancelRental(id)) {
+        redirectAttributes.addFlashAttribute("rentalMessage", "Your rental was cancelled.");
+        } else {
+        redirectAttributes.addFlashAttribute("rentalError", "This rental can't be cancelled.");
+        }
+        return "redirect:/customer/dashboard";
+    }
+
 }
