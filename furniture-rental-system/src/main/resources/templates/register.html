@@ -41,6 +41,12 @@
               <p class="text-muted">Fill in your details to get started</p>
             </div>
 
+            <div
+              class="alert alert-danger"
+              role="alert"
+              th:if="${registerError}"
+              th:text="${registerError}"
+            ></div>
             <form th:action="@{/register}" th:object="${user}" method="post">
               <div class="row g-3">
                 <div class="col-md-6">
@@ -102,6 +108,7 @@
                   id="password"
                   th:field="*{password}"
                   placeholder="Password"
+                  minlength="8"
                   required
                 />
                 <label for="password">Password</label>

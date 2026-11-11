@@ -2,6 +2,8 @@ package com.furniture.rental.service;
 
 import com.furniture.rental.entity.Furniture;
 import com.furniture.rental.repository.FurnitureRepository;
+import com.furniture.rental.repository.RentalItemRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
@@ -77,5 +79,13 @@ public class FurnitureService {
 
     public void deleteFurniture(Long id) {
         furnitureRepository.deleteById(id);
+    }
+
+
+    @Autowired
+    private RentalItemRepository rentalItemRepository;
+
+    public boolean isInRentals(Long furnitureId) {
+        return rentalItemRepository.existsByFurniture_Id(furnitureId);
     }
 }

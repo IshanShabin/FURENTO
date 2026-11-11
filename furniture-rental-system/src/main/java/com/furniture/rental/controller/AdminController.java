@@ -222,16 +222,42 @@ public class AdminController {
     }
 
     // Delete Actions
-    @GetMapping("/categories/delete/{id}")
-    public String deleteCategory(@PathVariable Long id) {
+    @PostMapping("/categories/delete/{id}")
+    public String deleteCategory(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    if (categoryService.hasFurniture(id)) {
+        redirectAttributes.addFlashAttribute("categoryError",
+                "This category still has furniture. Move or delete those items first.");
+    } else {
         categoryService.deleteCategory(id);
-        return "redirect:/admin/categories";
+        redirectAttributes.addFlashAttribute("categoryMessage", "Category deleted.");
+    }
+    return "redirect:/admin/categories";
     }
 
-    @GetMapping("/furniture/delete/{id}")
-    public String deleteFurniture(@PathVariable Long id) {
-        furnitureService.deleteFurniture(id);
+    @PostMapping("/furniture/delete/{id}")
+    public String deleteFurniture(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    Furniture furniture = furnitureService.getFurnitureById(id);
+    if (furniture == null) {
         return "redirect:/admin/furniture";
+    }
+    if (furnitureService.isInRentals(id)) {
+        redirectAttributes.addFlashAttribute("furnitureError",
+                "This item is part of existing rentals and can't be deleted. Set its stock to 0 to mark it out of stock instead.");
+        return "redirect:/admin/furniture";
+    }
+
+    List<String> imageUrls = furniture.getImages() == null ? List.of()
+            : furniture.getImages().stream().map(FurnitureImage::getImageUrl).toList();
+    furnitureService.deleteFurniture(id);
+    for (String imageUrl : imageUrls) {
+        try {
+            furnitureImageStorageService.deleteManagedImage(imageUrl);
+        } catch (IOException ignored) {
+            // the leftover file can be removed from the upload folder later
+        }
+    }
+    redirectAttributes.addFlashAttribute("furnitureMessage", "Furniture deleted.");
+    return "redirect:/admin/furniture";
     }
 
 

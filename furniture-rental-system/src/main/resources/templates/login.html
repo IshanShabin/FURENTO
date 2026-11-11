@@ -50,6 +50,10 @@
               th:text="${loginError}"
             ></div>
 
+            <div class="alert alert-success" role="alert" th:if="${registered}">
+              Account created. Please log in.
+            </div>
+
             <form th:action="@{/login}" method="post">
               <div class="form-floating mb-3">
                 <input

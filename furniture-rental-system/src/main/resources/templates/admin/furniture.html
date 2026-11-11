@@ -29,6 +29,22 @@
         >
       </div>
 
+      <div
+        class="alert alert-success"
+        th:if="${furnitureMessage}"
+        th:text="${furnitureMessage}"
+      ></div>
+      <div
+        class="alert alert-warning"
+        th:if="${furnitureError}"
+        th:text="${furnitureError}"
+      ></div>
+      <div
+        class="alert alert-danger"
+        th:if="${imageError}"
+        th:text="${imageError}"
+      ></div>
+
       <table style="width: 100%; border-collapse: collapse; margin-top: 20px">
         <thead>
           <tr
@@ -81,12 +97,16 @@
                 class="btn btn-sm btn-info text-white me-2"
                 >Edit</a
               >
-              <a
-                th:href="@{'/admin/furniture/delete/' + ${item.id}}"
-                class="btn btn-sm btn-danger"
-                onclick="return confirm('Are you sure you want to delete this furniture?');"
-                >Delete</a
+              <form
+                th:action="@{'/admin/furniture/delete/' + ${item.id}}"
+                method="post"
+                class="d-inline"
+                onsubmit="return confirm('Are you sure you want to delete this furniture?');"
               >
+                <button type="submit" class="btn btn-sm btn-danger">
+                  Delete
+                </button>
+              </form>
             </td>
           </tr>
         </tbody>
