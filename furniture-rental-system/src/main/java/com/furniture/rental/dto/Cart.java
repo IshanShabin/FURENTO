@@ -7,19 +7,22 @@ import java.util.List;
 public class Cart {
     private List<CartItem> items = new ArrayList<>();
 
-    private BigDecimal totalPrice = BigDecimal.ZERO;
 
     public List<CartItem> getItems() {
         return items;
     }
 
-    public BigDecimal getTotalPrice() {
-        return totalPrice;
-    }
+       public BigDecimal getTotalPrice() {
+       return items.stream()
+               .map(i -> i.getPricePerMonth()
+                       .multiply(BigDecimal.valueOf(i.getQuantity()))
+                       .multiply(BigDecimal.valueOf(i.getRentalPeriodMonths())))
+               .reduce(BigDecimal.ZERO, BigDecimal::add);
+   }
 
-    public void setTotalPrice(BigDecimal totalPrice) {
-        this.totalPrice = totalPrice;
-    }
+   /** Kept so existing callers compile; the total is always computed from the items. */
+   public void setTotalPrice(BigDecimal ignored) {
+   }
 
     public void setItems(List<CartItem> items) {
         this.items = items;
@@ -72,4 +75,8 @@ public class Cart {
                 .map(i -> i.getPricePerMonth().multiply(new BigDecimal(i.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
+
+       public int getTotalQuantity() {
+       return items.stream().mapToInt(CartItem::getQuantity).sum();
+   }
 }

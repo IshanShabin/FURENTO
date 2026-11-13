@@ -78,11 +78,11 @@
           <div class="col-6 text-end">
             <h4 class="text-uppercase text-secondary mb-1">Invoice</h4>
             <p class="mb-0">
-              <strong>Order #:</strong>
+              <strong>Order Number: </strong>
               <span th:text="${rental.id}">12345</span>
             </p>
             <p class="mb-0">
-              <strong>Date:</strong>
+              <strong>Order Date: </strong>
               <span
                 th:text="${#temporals.format(rental.orderDate, 'MMMM dd, yyyy')}"
                 >Jan 01, 2026</span
@@ -162,30 +162,51 @@
                 </td>
                 <td
                   class="text-center"
-                  th:text="${item.rentalPeriodMonths + ' Months'}"
+                  th:text="${item.rentalPeriodMonths + (item.rentalPeriodMonths == 1 ? ' Month' : ' Months')}"
                 >
                   12 Months
                 </td>
                 <td class="text-center" th:text="${item.quantity}">1</td>
                 <td
                   class="text-end"
-                  th:text="${'₹' + item.furniture.rentalPricePerMonth}"
+                  th:text="${'₹' + #numbers.formatDecimal(item.furniture.rentalPricePerMonth, 1, 'COMMA', 2, 'POINT')}"
                 >
                   ₹50.00
                 </td>
-                <td class="text-end fw-bold" th:text="${'₹' + item.rentAmount}">
+                <td
+                  class="text-end fw-bold"
+                  th:text="${'₹' + #numbers.formatDecimal(item.rentAmount, 1, 'COMMA', 2, 'POINT')}"
+                >
                   ₹600.00
                 </td>
               </tr>
             </tbody>
             <tfoot>
               <tr>
+                <td colspan="4" class="text-end">Subtotal</td>
+                <td
+                  class="text-end"
+                  th:text="${'₹' + #numbers.formatDecimal(#aggregates.sum(rental.items.![rentAmount]), 1, 'COMMA', 2, 'POINT')}"
+                >
+                  ₹599.00
+                </td>
+              </tr>
+              <tr>
+                <td colspan="4" class="text-end">Tax (5%)</td>
+                <td
+                  class="text-end"
+                  th:text="${'₹' + #numbers.formatDecimal(rental.totalAmount - #aggregates.sum(rental.items.![rentAmount]), 1, 'COMMA', 2, 'POINT')}"
+                >
+                  ₹29.95
+                </td>
+              </tr>
+              <tr>
                 <td colspan="4" class="text-end fw-bold">Grand Total</td>
                 <td
                   class="text-end fw-bold fs-5 text-primary"
-                  th:text="${'₹' + rental.totalAmount}"
+                  th:text="${'₹' + #numbers.formatDecimal(rental.totalAmount, 1, 'COMMA', 2, 'POINT')}"
                 >
-                  ₹600.00
+                  ₹628.95
                 </td>
               </tr>
             </tfoot>

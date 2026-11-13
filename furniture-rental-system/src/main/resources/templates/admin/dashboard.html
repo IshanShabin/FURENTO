@@ -87,7 +87,10 @@
                 >
                   Oct 23, 2026
                 </td>
-                <td class="text-end" th:text="${'₹' + rental.totalAmount}">
+                <td
+                  class="text-end"
+                  th:text="${'₹' + #numbers.formatDecimal(rental.totalAmount, 1, 'COMMA', 2, 'POINT')}"
+                >
                   ₹0
                 </td>
                 <td>

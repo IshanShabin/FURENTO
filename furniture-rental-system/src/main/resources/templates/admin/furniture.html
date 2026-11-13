@@ -74,7 +74,7 @@
             </td>
             <td
               style="padding: 12px"
-              th:text="${'₹' + item.rentalPricePerMonth}"
+              th:text="${'₹' + #numbers.formatDecimal(item.rentalPricePerMonth, 1, 'COMMA', 2, 'POINT')}"
             >
               ₹50.00
             </td>

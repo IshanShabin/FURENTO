@@ -155,28 +155,34 @@
                     </h6>
                     <small
                       class="text-muted"
-                      th:text="${'Qty: ' + item.quantity + ' | ' + item.rentalPeriodMonths + ' months'}"
-                      >Qty: 1</small
+th:text="${'Qty: ' + item.quantity + ' | ' + item.rentalPeriodMonths + (item.rentalPeriodMonths == 1 ? ' month' : ' months')}"                      >Qty: 1</small
                     >
                   </div>
                   <span
                     class="text-muted"
-                    th:text="${'₹' + (item.pricePerMonth * item.quantity * item.rentalPeriodMonths)}"
+                    th:text="${'₹' + #numbers.formatDecimal(item.pricePerMonth * item.quantity * item.rentalPeriodMonths, 1, 'COMMA', 2, 'POINT')}"
                     >₹120</span
                   >
                 </li>
               </ul>
               <div class="d-flex justify-content-between mb-2">
                 <span>Subtotal</span>
-                <span th:text="${'₹' + cart.totalPrice}">₹500</span>
+                <span
+                  th:text="${'₹' + #numbers.formatDecimal(cart.totalPrice, 1, 'COMMA', 2, 'POINT')}"
+                  >₹500</span
+                >
               </div>
               <div class="d-flex justify-content-between mb-2">
                 <span>Tax (5%)</span>
-                <span th:text="${'₹' + (cart.totalPrice * 0.05)}">₹25</span>
+                <span
+                  th:text="${'₹' + #numbers.formatDecimal(cart.totalPrice * 0.05, 1, 'COMMA', 2, 'POINT')}"
+                  >₹25</span
+                >
               </div>
               <div class="d-flex justify-content-between border-top pt-3">
                 <span class="fw-bold">Total (INR)</span>
-                <strong th:text="${'₹' + (cart.totalPrice * 1.05)}"
+                <strong
+                  th:text="${'₹' + #numbers.formatDecimal(cart.totalPrice * 1.05, 1, 'COMMA', 2, 'POINT')}"
                   >₹525</strong
                 >
               </div>
@@ -268,10 +274,8 @@
               },
             },
           });
-          razorpay.on("payment.failed", (response) => {
-            placeOrderButton.disabled = false;
-            paymentMessage.textContent =
-              response.error.description || "Payment failed. Please try again.";
+          razorpay.on("payment.failed", () => {
+            paymentMessage.textContent = "";
           });
           razorpay.open();
         } catch (error) {

@@ -14,12 +14,6 @@
         th:if="${cartError}"
         th:text="${cartError}"
       ></div>
-      <div
-        class="alert alert-warning"
-        role="alert"
-        th:if="${cartError}"
-        th:text="${cartError}"
-      ></div>
 
       <div th:if="${cart == null or cart.items.empty}" class="text-center py-5">
         <i class="fas fa-shopping-cart fa-4x text-muted mb-3"></i>
@@ -72,7 +66,9 @@
                           >
                         </a>
                       </td>
-                      <td th:text="${'₹' + item.pricePerMonth + '/mo'}">
+                      <td
+                        th:text="${'₹' + #numbers.formatDecimal(item.pricePerMonth, 1, 'COMMA', 2, 'POINT') + '/mo'}"
+                      >
                         ₹50.00
                       </td>
                       <td>
@@ -109,7 +105,7 @@
                       </td>
                       <td
                         class="fw-bold text-primary"
-                        th:text="${'₹' + (item.pricePerMonth * item.quantity * item.rentalPeriodMonths)}"
+                        th:text="${'₹' + #numbers.formatDecimal(item.pricePerMonth * item.quantity * item.rentalPeriodMonths, 1, 'COMMA', 2, 'POINT')}"
                       >
                         ₹300.00
                       </td>
@@ -144,7 +140,9 @@
               <h5 class="fw-bold mb-4">Order Summary</h5>
               <div class="d-flex justify-content-between mb-2">
                 <span class="text-muted">Subtotal</span>
-                <span class="fw-bold" th:text="${'₹' + cart.totalPrice}"
+                <span
+                  class="fw-bold"
+                  th:text="${'₹' + #numbers.formatDecimal(cart.totalPrice, 1, 'COMMA', 2, 'POINT')}"
                   >₹300.00</span
                 >
               </div>
@@ -152,7 +150,7 @@
                 <span class="text-muted">Tax (5%)</span>
                 <span
                   class="fw-bold"
-                  th:text="${'₹' + (cart.totalPrice * 0.05)}"
+                  th:text="${'₹' + #numbers.formatDecimal(cart.totalPrice * 0.05, 1, 'COMMA', 2, 'POINT')}"
                   >₹15.00</span
                 >
               </div>
@@ -165,7 +163,7 @@
                 <span class="fw-bold fs-5">Total</span>
                 <span
                   class="fw-bold fs-5 text-primary"
-                  th:text="${'₹' + (cart.totalPrice * 1.05)}"
+                  th:text="${'₹' + #numbers.formatDecimal(cart.totalPrice * 1.05, 1, 'COMMA', 2, 'POINT')}"
                   >₹315.00</span
                 >
               </div>

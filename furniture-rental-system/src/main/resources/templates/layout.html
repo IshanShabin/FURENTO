@@ -66,10 +66,11 @@
                         <li class="nav-item ms-lg-3" sec:authorize="hasRole('CUSTOMER')">
                             <a href="/cart" class="btn btn-outline-dark position-relative rounded-pill px-3">
                                 <i class="fas fa-shopping-cart"></i>
-                                <span
-                                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                                    style="font-size: 0.6em;"
-                                    th:text="${session.cart != null ? session.cart.items.size() : 0}">0</span>
+                        <span
+                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                            style="font-size: 0.6em;"
+                            th:if="${session.cart != null and session.cart.totalQuantity > 0}"
+                            th:text="${session.cart.totalQuantity}">0</span>
                             </a>
                         </li>
 

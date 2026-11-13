@@ -131,7 +131,7 @@
                   >
                     <span
                       class="text-primary fw-bold fs-5"
-                      th:text="${'₹' + item.rentalPricePerMonth + '/mo'}"
+                      th:text="${'₹' + #numbers.formatDecimal(item.rentalPricePerMonth, 1, 'COMMA', 2, 'POINT') + '/mo'}"
                       >₹50/mo</span
                     >
                   </div>

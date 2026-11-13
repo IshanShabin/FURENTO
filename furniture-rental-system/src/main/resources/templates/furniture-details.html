@@ -49,13 +49,13 @@
             <div class="d-flex align-items-center mt-2">
               <span
                 class="text-primary fw-bold display-6 me-3"
-                th:text="${'₹' + furniture.rentalPricePerMonth + '/mo'}"
+                th:text="${'₹' + #numbers.formatDecimal(furniture.rentalPricePerMonth, 1, 'COMMA', 2, 'POINT') + '/mo'}"
                 >₹50/mo</span
               >
               <span
                 class="text-muted text-decoration-line-through me-2"
                 th:if="${furniture.purchasePrice != null}"
-                th:text="${'₹' + (furniture.purchasePrice * 0.05) + '/mo'}"
+                th:text="${'₹' + #numbers.formatDecimal(furniture.purchasePrice * 0.05, 1, 'COMMA', 2, 'POINT') + '/mo'}"
                 >₹60/mo</span
               >
               <!-- Fake discount logic for display -->
@@ -145,7 +145,7 @@
               <div>
                 <span
                   class="fw-bold fs-5 me-2"
-                  th:text="${'₹' + furniture.purchasePrice}"
+                  th:text="${'₹' + #numbers.formatDecimal(furniture.purchasePrice, 1, 'COMMA', 2, 'POINT')}"
                   >₹900</span
                 >
                 <button class="btn btn-outline-dark btn-sm">
