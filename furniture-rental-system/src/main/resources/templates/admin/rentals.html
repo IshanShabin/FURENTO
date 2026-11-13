@@ -69,7 +69,7 @@
                 </button>
               </form>
               <form
-                th:if="${rental.status == 'PENDING' or rental.status == 'ACTIVE'}"
+                th:if="${rental.status == 'PENDING'}"
                 th:action="@{'/admin/rentals/cancel/' + ${rental.id}}"
                 method="post"
                 class="d-inline"
@@ -79,9 +79,7 @@
                   Cancel
                 </button>
               </form>
-              <span
-                th:if="${rental.status == 'CANCELLED' or rental.status == 'RETURNED'}"
-                class="text-muted"
+              <span th:if="${rental.status != 'PENDING'}" class="text-muted"
                 >&mdash;</span
               >
             </td>

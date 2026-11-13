@@ -277,8 +277,7 @@ public String cancelRental(@PathVariable Long id, RedirectAttributes redirectAtt
                 ? "Rental cancelled and stock restored. This order was paid online, so refund it manually in Razorpay."
                 : "Rental cancelled and stock restored.");
     } else {
-        redirectAttributes.addFlashAttribute("rentalError", "This rental can't be cancelled.");
-    }
+            redirectAttributes.addFlashAttribute("rentalError", "Only pending rentals can be cancelled.");    }
     return "redirect:/admin/rentals";
 }
 }

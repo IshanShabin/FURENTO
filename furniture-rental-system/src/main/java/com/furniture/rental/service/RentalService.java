@@ -101,8 +101,7 @@ public class RentalService {
     if (rental == null) {
         return false;
     }
-    String status = rental.getStatus();
-    if ("CANCELLED".equals(status) || "RETURNED".equals(status)) {
+        if (!"PENDING".equals(rental.getStatus())) {
         return false;
     }
 

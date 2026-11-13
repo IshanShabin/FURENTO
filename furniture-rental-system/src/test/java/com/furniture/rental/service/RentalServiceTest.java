@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -83,6 +84,21 @@ class RentalServiceTest {
 
         assertFalse(rentalService.cancelRental(1L));
         assertEquals("RETURNED", rental.getStatus());
+    }
+
+    
+    @Test
+    void activeRentalCannotBeCancelled() {
+        Furniture chair = new Furniture();
+        chair.setStockQuantity(1);
+        Rental rental = rentalWith(chair, 2, "ACTIVE");
+        when(rentalRepository.findById(1L)).thenReturn(Optional.of(rental));
+
+        assertFalse(rentalService.cancelRental(1L));
+
+        assertEquals("ACTIVE", rental.getStatus());
+        assertEquals(1, chair.getStockQuantity());
+        verify(furnitureRepository, never()).save(any());
     }
 
     @Test

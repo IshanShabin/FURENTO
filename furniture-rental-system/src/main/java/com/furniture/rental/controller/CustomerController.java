@@ -79,8 +79,7 @@ public class CustomerController {
         } else if (rentalService.cancelRental(id)) {
         redirectAttributes.addFlashAttribute("rentalMessage", "Your rental was cancelled.");
         } else {
-        redirectAttributes.addFlashAttribute("rentalError", "This rental can't be cancelled.");
-        }
+        redirectAttributes.addFlashAttribute("rentalError", "Only pending rentals can be cancelled.");        }
         return "redirect:/customer/dashboard";
     }
 
