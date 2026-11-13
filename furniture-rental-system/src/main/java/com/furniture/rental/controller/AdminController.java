@@ -279,5 +279,16 @@ public String cancelRental(@PathVariable Long id, RedirectAttributes redirectAtt
     } else {
             redirectAttributes.addFlashAttribute("rentalError", "Only pending rentals can be cancelled.");    }
     return "redirect:/admin/rentals";
-}
+    }
+
+
+@PostMapping("/rentals/return/{id}")
+public String returnRental(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    if (rentalService.returnRental(id)) {
+        redirectAttributes.addFlashAttribute("rentalMessage", "Rental marked as returned and stock restored.");
+    } else {
+        redirectAttributes.addFlashAttribute("rentalError", "Only active rentals can be marked as returned.");
+    }
+    return "redirect:/admin/rentals";
+    }
 }

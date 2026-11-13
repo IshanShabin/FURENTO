@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 //import java.util.Objects;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -87,9 +88,19 @@ public class RentalService {
         if ("ACTIVE".equals(status) && !"PENDING".equals(rental.getStatus())) {
             return;
         }
-        rental.setStatus(status);
-        if ("ACTIVE".equals(status) && rental.getDelivery() != null) {
-           rental.getDelivery().setStatus("DELIVERED");
+                    rental.setStatus(status);
+        if ("ACTIVE".equals(status)) {
+            LocalDate start = LocalDate.now();
+            if (rental.getItems() != null) {
+                for (RentalItem item : rental.getItems()) {
+                    item.setStartDate(start);
+                    item.setEndDate(start.plusMonths(item.getRentalPeriodMonths()));
+                }
+            }
+            if (rental.getDelivery() != null) {
+                rental.getDelivery().setStatus("DELIVERED");
+                rental.getDelivery().setDeliveryDate(LocalDateTime.now());
+            }
         }
         rentalRepository.save(rental);
         rentalRepository.flush();
@@ -119,6 +130,31 @@ public class RentalService {
         }
         if (rental.getPayment() != null && "PENDING".equals(rental.getPayment().getStatus())) {
             rental.getPayment().setStatus("CANCELLED");
+        }
+        rentalRepository.save(rental);
+        return true;
+    }
+
+    
+    @Transactional
+    public boolean returnRental(Long id) {
+        Rental rental = rentalRepository.findById(id).orElse(null);
+        if (rental == null || !"ACTIVE".equals(rental.getStatus())) {
+            return false;
+        }
+
+        if (rental.getItems() != null) {
+            for (RentalItem item : rental.getItems()) {
+                Furniture furniture = item.getFurniture();
+                furniture.setStockQuantity(furniture.getStockQuantity() + item.getQuantity());
+                furnitureRepository.save(furniture);
+            }
+        }
+
+        rental.setStatus("RETURNED");
+        if (rental.getDelivery() != null) {
+            rental.getDelivery().setStatus("PICKED_UP");
+            rental.getDelivery().setPickupDate(LocalDateTime.now());
         }
         rentalRepository.save(rental);
         return true;

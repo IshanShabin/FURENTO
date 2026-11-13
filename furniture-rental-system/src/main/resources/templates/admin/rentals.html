@@ -79,7 +79,20 @@
                   Cancel
                 </button>
               </form>
-              <span th:if="${rental.status != 'PENDING'}" class="text-muted"
+              <form
+                th:if="${rental.status == 'ACTIVE'}"
+                th:action="@{'/admin/rentals/return/' + ${rental.id}}"
+                method="post"
+                class="d-inline"
+                onsubmit="return confirm('Mark this rental as returned and put its items back in stock?');"
+              >
+                <button type="submit" class="btn btn-sm btn-primary">
+                  Mark returned
+                </button>
+              </form>
+              <span
+                th:if="${rental.status == 'CANCELLED' or rental.status == 'RETURNED'}"
+                class="text-muted"
                 >&mdash;</span
               >
             </td>

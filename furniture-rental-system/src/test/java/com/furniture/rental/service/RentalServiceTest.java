@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -127,4 +128,60 @@ class RentalServiceTest {
         assertEquals("ACTIVE", rental.getStatus());
         assertEquals("DELIVERED", rental.getDelivery().getStatus());
     }
+
+        
+    @Test
+    void acceptingSetsStartAndEndDatesFromRentalPeriod() {
+        Rental rental = rentalWith(new Furniture(), 1, "PENDING");
+        RentalItem item = rental.getItems().get(0);
+        item.setRentalPeriodMonths(3);
+        when(rentalRepository.findById(1L)).thenReturn(Optional.of(rental));
+
+        rentalService.updateStatus(1L, "ACTIVE");
+
+        LocalDate today = LocalDate.now();
+        assertEquals(today, item.getStartDate());
+        assertEquals(today.plusMonths(3), item.getEndDate());
+        assertNotNull(rental.getDelivery().getDeliveryDate());
+    }
+
+    @Test
+    void returnRestoresStockAndMarksReturned() {
+        Furniture chair = new Furniture();
+        chair.setStockQuantity(0);
+        Rental rental = rentalWith(chair, 2, "ACTIVE");
+        when(rentalRepository.findById(1L)).thenReturn(Optional.of(rental));
+
+        assertTrue(rentalService.returnRental(1L));
+
+        assertEquals(2, chair.getStockQuantity());
+        assertTrue(chair.isAvailable());
+        assertEquals("RETURNED", rental.getStatus());
+        assertEquals("PICKED_UP", rental.getDelivery().getStatus());
+        assertNotNull(rental.getDelivery().getPickupDate());
+        verify(furnitureRepository).save(chair);
+        verify(rentalRepository).save(rental);
+    }
+
+    @Test
+    void onlyActiveRentalsCanBeReturned() {
+        for (String status : List.of("PENDING", "CANCELLED", "RETURNED")) {
+            Furniture chair = new Furniture();
+            chair.setStockQuantity(1);
+            Rental rental = rentalWith(chair, 1, status);
+            when(rentalRepository.findById(1L)).thenReturn(Optional.of(rental));
+
+            assertFalse(rentalService.returnRental(1L));
+
+            assertEquals(status, rental.getStatus());
+            assertEquals(1, chair.getStockQuantity());
+        }
+        verify(furnitureRepository, never()).save(any());
+    }
+
+    @Test
+    void returningUnknownRentalReturnsFalse() {
+        assertFalse(rentalService.returnRental(99L));
+    }
+
 }
