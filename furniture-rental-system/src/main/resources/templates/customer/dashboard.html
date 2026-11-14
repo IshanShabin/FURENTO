@@ -98,6 +98,16 @@
                 >
                   ACTIVE
                 </span>
+                <span th:if="${rental.overdue}" class="badge bg-danger ms-1"
+                  >OVERDUE</span
+                >
+                <div
+                  th:if="${rental.status == 'ACTIVE' and rental.dueDate != null}"
+                  class="small text-muted mt-1"
+                  th:text="${'Due ' + #temporals.format(rental.dueDate, 'MMM dd, yyyy')}"
+                >
+                  Due Jan 01, 2026
+                </div>
               </td>
               <td style="padding: 12px">
                 <a

@@ -2,6 +2,7 @@ package com.furniture.rental.service;
 
 import com.furniture.rental.entity.Delivery;
 import com.furniture.rental.entity.Furniture;
+import com.furniture.rental.entity.Payment;
 import com.furniture.rental.entity.Rental;
 import com.furniture.rental.entity.RentalItem;
 import com.furniture.rental.repository.FurnitureRepository;
@@ -13,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -184,4 +186,38 @@ class RentalServiceTest {
         assertFalse(rentalService.returnRental(99L));
     }
 
+
+    
+    @Test
+    void acceptingMarksCodPaymentAsPaid() {
+        Rental rental = rentalWith(new Furniture(), 1, "PENDING");
+        Payment payment = new Payment();
+        payment.setPaymentMethod("COD");
+        payment.setStatus("PENDING");
+        rental.setPayment(payment);
+        when(rentalRepository.findById(1L)).thenReturn(Optional.of(rental));
+
+        rentalService.updateStatus(1L, "ACTIVE");
+
+        assertEquals("PAID", payment.getStatus());
+        assertNotNull(payment.getPaymentDate());
+    }
+
+    @Test
+    void acceptingLeavesOnlinePaymentUntouched() {
+        Rental rental = rentalWith(new Furniture(), 1, "PENDING");
+        Payment payment = new Payment();
+        payment.setPaymentMethod("UPI");
+        payment.setStatus("PAID");
+        LocalDateTime paidAt = LocalDateTime.of(2026, 11, 1, 10, 0);
+        payment.setPaymentDate(paidAt);
+        rental.setPayment(payment);
+        when(rentalRepository.findById(1L)).thenReturn(Optional.of(rental));
+
+        rentalService.updateStatus(1L, "ACTIVE");
+
+        assertEquals("PAID", payment.getStatus());
+        assertEquals(paidAt, payment.getPaymentDate());
+    }
+    
 }

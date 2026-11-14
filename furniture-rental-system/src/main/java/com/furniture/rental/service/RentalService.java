@@ -101,6 +101,12 @@ public class RentalService {
                 rental.getDelivery().setStatus("DELIVERED");
                 rental.getDelivery().setDeliveryDate(LocalDateTime.now());
             }
+                        Payment payment = rental.getPayment();
+            if (payment != null && "COD".equals(payment.getPaymentMethod())
+                    && "PENDING".equals(payment.getStatus())) {
+                payment.setStatus("PAID");
+                payment.setPaymentDate(LocalDateTime.now());
+            }
         }
         rentalRepository.save(rental);
         rentalRepository.flush();

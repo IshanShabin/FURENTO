@@ -2,6 +2,7 @@ package com.furniture.rental.entity;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -57,4 +58,23 @@ public class Rental {
     public void setItems(List<RentalItem> items) { this.items = items; }
     public List<Penalty> getPenalties() { return penalties; }
     public void setPenalties(List<Penalty> penalties) { this.penalties = penalties; }
+
+    
+    @Transient
+    public LocalDate getDueDate() {
+        if (items == null) {
+            return null;
+        }
+        return items.stream()
+                .map(RentalItem::getEndDate)
+                .filter(date -> date != null)
+                .max(LocalDate::compareTo)
+                .orElse(null);
+    }
+
+    @Transient
+    public boolean isOverdue() {
+        LocalDate due = getDueDate();
+        return "ACTIVE".equals(status) && due != null && LocalDate.now().isAfter(due);
+    }
 }

@@ -88,6 +88,13 @@
                 >Jan 01, 2026</span
               >
             </p>
+                        <p class="mb-0">
+              <strong>Rental Status: </strong>
+              <span th:text="${rental.status}">ACTIVE</span>
+              <span th:if="${rental.overdue}" class="badge bg-danger ms-1"
+                >OVERDUE</span
+              >
+            </p>
           </div>
         </div>
 
@@ -160,11 +167,18 @@
                     >Living Room</small
                   >
                 </td>
-                <td
-                  class="text-center"
-                  th:text="${item.rentalPeriodMonths + (item.rentalPeriodMonths == 1 ? ' Month' : ' Months')}"
-                >
-                  12 Months
+                <td class="text-center">
+                  <span
+                    th:text="${item.rentalPeriodMonths + (item.rentalPeriodMonths == 1 ? ' Month' : ' Months')}"
+                    >12 Months</span
+                  >
+                  <div
+                    class="small text-muted"
+                    th:if="${item.startDate != null and item.endDate != null}"
+                    th:text="${#temporals.format(item.startDate, 'MMM dd, yyyy') + ' to ' + #temporals.format(item.endDate, 'MMM dd, yyyy')}"
+                  >
+                    Jan 01, 2026 to Feb 01, 2026
+                  </div>
                 </td>
                 <td class="text-center" th:text="${item.quantity}">1</td>
                 <td
@@ -227,17 +241,27 @@
               <div class="d-flex justify-content-between mb-2">
                 <span>Status:</span>
                 <span
-                  class="badge bg-success"
+                  class="badge"
+                  th:classappend="${rental.payment.status == 'PAID' ? 'bg-success' : 'bg-warning text-dark'}"
                   th:text="${rental.payment.status}"
-                  >COMPLETED</span
+                  >PAID</span
                 >
               </div>
-              <div class="d-flex justify-content-between">
-                <span>Date:</span>
+              <div
+                class="d-flex justify-content-between"
+                th:if="${rental.payment.status == 'PAID' and rental.payment.paymentDate != null}"
+              >
+                <span>Paid on:</span>
                 <span
                   th:text="${#temporals.format(rental.payment.paymentDate, 'MMM dd, yyyy HH:mm')}"
                   >Jan 01, 2026</span
                 >
+              </div>
+              <div
+                class="small text-muted"
+                th:if="${rental.payment.status != 'PAID' and rental.payment.paymentMethod == 'COD'}"
+              >
+                Cash to be paid on delivery.
               </div>
             </div>
             <div th:if="${rental.payment == null}">
