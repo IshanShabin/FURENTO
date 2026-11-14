@@ -219,5 +219,37 @@ class RentalServiceTest {
         assertEquals("PAID", payment.getStatus());
         assertEquals(paidAt, payment.getPaymentDate());
     }
+
+    
+    @Test
+    void transitionTableAllowsOnlyValidMoves() {
+        assertTrue(rentalService.canTransition("PENDING", "ACTIVE"));
+        assertTrue(rentalService.canTransition("PENDING", "CANCELLED"));
+        assertTrue(rentalService.canTransition("ACTIVE", "RETURNED"));
+
+        assertFalse(rentalService.canTransition("PENDING", "RETURNED"));
+        assertFalse(rentalService.canTransition("ACTIVE", "CANCELLED"));
+        assertFalse(rentalService.canTransition("ACTIVE", "PENDING"));
+        assertFalse(rentalService.canTransition("RETURNED", "ACTIVE"));
+        assertFalse(rentalService.canTransition("CANCELLED", "ACTIVE"));
+        assertFalse(rentalService.canTransition("RETURNED", "CANCELLED"));
+        assertFalse(rentalService.canTransition(null, "ACTIVE"));
+        assertFalse(rentalService.canTransition("PENDING", "BOGUS"));
+        assertFalse(rentalService.canTransition("BOGUS", "ACTIVE"));
+    }
+
+    @Test
+    void updateStatusRejectsTargetsThatNeedTheirOwnAction() {
+        Rental rental = rentalWith(new Furniture(), 1, "ACTIVE");
+        when(rentalRepository.findById(1L)).thenReturn(Optional.of(rental));
+
+        for (String target : List.of("RETURNED", "CANCELLED", "PENDING", "BOGUS")) {
+            assertThrows(IllegalArgumentException.class,
+                    () -> rentalService.updateStatus(1L, target));
+        }
+
+        assertEquals("ACTIVE", rental.getStatus());
+        verify(rentalRepository, never()).save(any());
+    }
     
 }

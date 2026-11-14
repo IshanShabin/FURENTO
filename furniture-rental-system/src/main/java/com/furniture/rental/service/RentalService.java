@@ -6,7 +6,8 @@ import com.furniture.rental.repository.RentalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import java.util.Map;
+import java.util.Set;
 //import java.util.Objects;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -22,6 +23,17 @@ public class RentalService {
 
     @Autowired
     private FurnitureRepository furnitureRepository;
+
+    
+    private static final Map<String, Set<String>> ALLOWED_TRANSITIONS = Map.of(
+            "PENDING", Set.of("ACTIVE", "CANCELLED"),
+            "ACTIVE", Set.of("RETURNED"),
+            "RETURNED", Set.of(),
+            "CANCELLED", Set.of());
+
+    public boolean canTransition(String from, String to) {
+        return from != null && ALLOWED_TRANSITIONS.getOrDefault(from, Set.of()).contains(to);
+    }
 
     @Transactional
     public Rental createRental(Rental rental) {
@@ -85,7 +97,11 @@ public class RentalService {
         if (rental == null) {
             return;
         }
-        if ("ACTIVE".equals(status) && !"PENDING".equals(rental.getStatus())) {
+                if (!"ACTIVE".equals(status)) {
+            throw new IllegalArgumentException(
+                    "Use cancelRental or returnRental to move a rental to " + status);
+        }
+        if (!canTransition(rental.getStatus(), status)) {
             return;
         }
                     rental.setStatus(status);
@@ -118,7 +134,7 @@ public class RentalService {
     if (rental == null) {
         return false;
     }
-        if (!"PENDING".equals(rental.getStatus())) {
+                if (!canTransition(rental.getStatus(), "CANCELLED")) {
         return false;
     }
 
@@ -145,8 +161,8 @@ public class RentalService {
     @Transactional
     public boolean returnRental(Long id) {
         Rental rental = rentalRepository.findById(id).orElse(null);
-        if (rental == null || !"ACTIVE".equals(rental.getStatus())) {
-            return false;
+        if (rental == null || !canTransition(rental.getStatus(), "RETURNED")) {           
+             return false;
         }
 
         if (rental.getItems() != null) {

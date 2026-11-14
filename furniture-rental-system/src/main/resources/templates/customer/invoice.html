@@ -57,6 +57,14 @@
           max-width: 100%;
         }
 
+        .invoice-container .mb-5 {
+          margin-bottom: 1.5rem !important;
+        }
+
+        .invoice-container .mt-5 {
+          margin-top: 1.5rem !important;
+        }
+
         .no-print {
           display: none !important;
         }
@@ -88,7 +96,7 @@
                 >Jan 01, 2026</span
               >
             </p>
-                        <p class="mb-0">
+            <p class="mb-0">
               <strong>Rental Status: </strong>
               <span th:text="${rental.status}">ACTIVE</span>
               <span th:if="${rental.overdue}" class="badge bg-danger ms-1"
@@ -173,7 +181,7 @@
                     >12 Months</span
                   >
                   <div
-                    class="small text-muted"
+                    class="small text-muted text-nowrap"
                     th:if="${item.startDate != null and item.endDate != null}"
                     th:text="${#temporals.format(item.startDate, 'MMM dd, yyyy') + ' to ' + #temporals.format(item.endDate, 'MMM dd, yyyy')}"
                   >
