@@ -33,6 +33,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Iterator;
+
 
 @Controller
 @RequestMapping("/cart")
@@ -57,6 +59,8 @@ public class CartController {
             cart = new Cart();
             session.setAttribute("cart", cart);
         }
+
+                refreshPrices(cart);
 
         // Calculate total
         BigDecimal total = BigDecimal.ZERO;
@@ -147,6 +151,9 @@ public String updateCartQuantity(@PathVariable int index, @RequestParam String a
     @GetMapping("/checkout")
     public String checkoutPage(HttpSession session, Model model) {
         Cart cart = (Cart) session.getAttribute("cart");
+                if (cart != null) {
+            refreshPrices(cart);
+        }
         if (cart == null || cart.getItems().isEmpty()) {
             return "redirect:/cart";
         }
@@ -298,6 +305,20 @@ public String updateCartQuantity(@PathVariable int index, @RequestParam String a
             return ResponseEntity.ok(Map.of("redirectUrl", "/customer/dashboard"));
         } catch (RestClientException exception) {
             return paymentError(HttpStatus.BAD_GATEWAY, "Unable to verify payment with Razorpay. Please contact support.");
+        }
+    }
+
+    
+    private void refreshPrices(Cart cart) {
+        Iterator<CartItem> iterator = cart.getItems().iterator();
+        while (iterator.hasNext()) {
+            CartItem item = iterator.next();
+            Furniture furniture = furnitureService.getFurnitureById(item.getFurnitureId());
+            if (furniture == null) {
+                iterator.remove();
+            } else {
+                item.setPricePerMonth(furniture.getRentalPricePerMonth());
+            }
         }
     }
 
