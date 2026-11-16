@@ -21,11 +21,7 @@ public class Cart {
                        .multiply(BigDecimal.valueOf(i.getRentalPeriodMonths())))
                .reduce(BigDecimal.ZERO, BigDecimal::add);
    }
-
-   /** Kept so existing callers compile; the total is always computed from the items. */
-   public void setTotalPrice(BigDecimal ignored) {
-   }
-
+   
     public void setItems(List<CartItem> items) {
         this.items = items;
     }
@@ -71,13 +67,6 @@ public class Cart {
         if (index >= 0 && index < items.size())
             items.remove(index);
     }
-
-    public BigDecimal getTotalMonthly() {
-        return items.stream()
-                .map(i -> i.getPricePerMonth().multiply(new BigDecimal(i.getQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
        public int getTotalQuantity() {
        return items.stream().mapToInt(CartItem::getQuantity).sum();
    }

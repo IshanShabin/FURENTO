@@ -35,7 +35,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Iterator;
 
-
 @Controller
 @RequestMapping("/cart")
 public class CartController {
@@ -60,15 +59,7 @@ public class CartController {
             session.setAttribute("cart", cart);
         }
 
-                refreshPrices(cart);
-
-        // Calculate total
-        BigDecimal total = BigDecimal.ZERO;
-        for (CartItem item : cart.getItems()) {
-            total = total.add(item.getPricePerMonth().multiply(new BigDecimal(item.getQuantity()))
-                    .multiply(new BigDecimal(item.getRentalPeriodMonths())));
-        }
-        cart.setTotalPrice(total);
+        refreshPrices(cart);
 
         model.addAttribute("cart", cart);
         return "cart";
@@ -90,7 +81,7 @@ public class CartController {
 
             int existingQuantity = cart.getItems().stream()
                     .filter(item -> item.getFurnitureId() != null
-                        && item.getFurnitureId().equals(f.getId()))
+                            && item.getFurnitureId().equals(f.getId()))
                     .mapToInt(CartItem::getQuantity)
                     .sum();
 
@@ -107,13 +98,14 @@ public class CartController {
             cart.addItem(new CartItem(f.getId(), f.getName(), f.getRentalPricePerMonth(), quantity, months, imageUrl),
                     f.getStockQuantity());
         } else {
-                redirectAttributes.addFlashAttribute("cartError", "Choose an available item and a valid quantity and duration.");
+            redirectAttributes.addFlashAttribute("cartError",
+                    "Choose an available item and a valid quantity and duration.");
         }
         return "redirect:/cart";
     }
 
-@PostMapping("/update/{index}")    
-public String updateCartQuantity(@PathVariable int index, @RequestParam String action, HttpSession session,
+    @PostMapping("/update/{index}")
+    public String updateCartQuantity(@PathVariable int index, @RequestParam String action, HttpSession session,
             RedirectAttributes redirectAttributes) {
         Cart cart = (Cart) session.getAttribute("cart");
         if (cart != null && index >= 0 && index < cart.getItems().size()) {
@@ -121,10 +113,10 @@ public String updateCartQuantity(@PathVariable int index, @RequestParam String a
             Furniture furniture = furnitureService.getFurnitureById(item.getFurnitureId());
             if ("increase".equals(action) && furniture != null) {
                 int quantityForProduct = cart.getItems().stream()
-                    .filter(cartItem -> cartItem.getFurnitureId() != null
-                        && cartItem.getFurnitureId().equals(item.getFurnitureId()))
-                    .mapToInt(CartItem::getQuantity)
-                    .sum();
+                        .filter(cartItem -> cartItem.getFurnitureId() != null
+                                && cartItem.getFurnitureId().equals(item.getFurnitureId()))
+                        .mapToInt(CartItem::getQuantity)
+                        .sum();
                 if (quantityForProduct < furniture.getStockQuantity()) {
                     item.setQuantity(item.getQuantity() + 1);
                 } else {
@@ -151,20 +143,12 @@ public String updateCartQuantity(@PathVariable int index, @RequestParam String a
     @GetMapping("/checkout")
     public String checkoutPage(HttpSession session, Model model) {
         Cart cart = (Cart) session.getAttribute("cart");
-                if (cart != null) {
+        if (cart != null) {
             refreshPrices(cart);
         }
         if (cart == null || cart.getItems().isEmpty()) {
             return "redirect:/cart";
         }
-
-        // Calculate total if not already
-        BigDecimal total = BigDecimal.ZERO;
-        for (CartItem item : cart.getItems()) {
-            total = total.add(item.getPricePerMonth().multiply(new BigDecimal(item.getQuantity()))
-                    .multiply(new BigDecimal(item.getRentalPeriodMonths())));
-        }
-        cart.setTotalPrice(total); // Assuming you add setTotalPrice to Cart or calculate it in template
 
         model.addAttribute("cart", cart);
         model.addAttribute("razorpayEnabled", razorpayService.isConfigured());
@@ -246,7 +230,8 @@ public String updateCartQuantity(@PathVariable int index, @RequestParam String a
                     "amount", amountPaise,
                     "currency", "INR"));
         } catch (RestClientException | IllegalArgumentException exception) {
-            return paymentError(HttpStatus.BAD_GATEWAY, "Unable to start payment. Check your Razorpay keys and try again.");
+            return paymentError(HttpStatus.BAD_GATEWAY,
+                    "Unable to start payment. Check your Razorpay keys and try again.");
         }
     }
 
@@ -271,7 +256,7 @@ public String updateCartQuantity(@PathVariable int index, @RequestParam String a
             if (!orderId.equals(gatewayPayment.orderId()) || gatewayPayment.amountPaise() != pending.amountPaise()) {
                 return paymentError(HttpStatus.CONFLICT, "The payment details do not match this order.");
             }
-                        try {
+            try {
                 BigDecimal currentTotal = calculateGrandTotal(getPricedOrderItems(pending.items()));
                 if (RazorpayService.toPaise(currentTotal) != pending.amountPaise()) {
                     return paymentError(HttpStatus.CONFLICT,
@@ -304,11 +289,11 @@ public String updateCartQuantity(@PathVariable int index, @RequestParam String a
             session.removeAttribute("pendingCheckout");
             return ResponseEntity.ok(Map.of("redirectUrl", "/customer/dashboard"));
         } catch (RestClientException exception) {
-            return paymentError(HttpStatus.BAD_GATEWAY, "Unable to verify payment with Razorpay. Please contact support.");
+            return paymentError(HttpStatus.BAD_GATEWAY,
+                    "Unable to verify payment with Razorpay. Please contact support.");
         }
     }
 
-    
     private void refreshPrices(Cart cart) {
         Iterator<CartItem> iterator = cart.getItems().iterator();
         while (iterator.hasNext()) {
@@ -322,7 +307,7 @@ public String updateCartQuantity(@PathVariable int index, @RequestParam String a
         }
     }
 
-        private List<CartItem> getPricedOrderItems(Cart cart) {
+    private List<CartItem> getPricedOrderItems(Cart cart) {
         return getPricedOrderItems(cart.getItems());
     }
 
@@ -339,7 +324,8 @@ public String updateCartQuantity(@PathVariable int index, @RequestParam String a
             }
             int requestedQuantity = requestedQuantities.merge(furniture.getId(), item.getQuantity(), Integer::sum);
             if (furniture.getStockQuantity() < requestedQuantity) {
-                throw new IllegalArgumentException("Requested quantity exceeds available stock for " + furniture.getName());
+                throw new IllegalArgumentException(
+                        "Requested quantity exceeds available stock for " + furniture.getName());
             }
             items.add(new CartItem(furniture.getId(), furniture.getName(), furniture.getRentalPricePerMonth(),
                     item.getQuantity(), item.getRentalPeriodMonths()));
@@ -354,7 +340,7 @@ public String updateCartQuantity(@PathVariable int index, @RequestParam String a
                     .multiply(BigDecimal.valueOf(item.getQuantity()))
                     .multiply(BigDecimal.valueOf(item.getRentalPeriodMonths())));
         }
-        return Pricing.grandTotal(subtotal);    
+        return Pricing.grandTotal(subtotal);
     }
 
     private Rental createRental(User user, List<CartItem> items, String addressLine1, String addressLine2,
