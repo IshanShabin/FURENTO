@@ -12,6 +12,8 @@ import com.furniture.rental.service.FurnitureService;
 import com.furniture.rental.service.RazorpayService;
 import com.furniture.rental.service.RentalService;
 import com.furniture.rental.service.UserService;
+import com.furniture.rental.util.Pricing;
+
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -106,8 +108,8 @@ public class CartController {
         return "redirect:/cart";
     }
 
-    @GetMapping("/update/{index}")
-    public String updateCartQuantity(@PathVariable int index, @RequestParam String action, HttpSession session,
+@PostMapping("/update/{index}")    
+public String updateCartQuantity(@PathVariable int index, @RequestParam String action, HttpSession session,
             RedirectAttributes redirectAttributes) {
         Cart cart = (Cart) session.getAttribute("cart");
         if (cart != null && index >= 0 && index < cart.getItems().size()) {
@@ -133,7 +135,7 @@ public class CartController {
         return "redirect:/cart";
     }
 
-    @GetMapping("/remove/{index}")
+    @PostMapping("/remove/{index}")
     public String removeFromCart(@PathVariable int index, HttpSession session) {
         Cart cart = (Cart) session.getAttribute("cart");
         if (cart != null) {
@@ -262,6 +264,18 @@ public class CartController {
             if (!orderId.equals(gatewayPayment.orderId()) || gatewayPayment.amountPaise() != pending.amountPaise()) {
                 return paymentError(HttpStatus.CONFLICT, "The payment details do not match this order.");
             }
+                        try {
+                BigDecimal currentTotal = calculateGrandTotal(getPricedOrderItems(pending.items()));
+                if (RazorpayService.toPaise(currentTotal) != pending.amountPaise()) {
+                    return paymentError(HttpStatus.CONFLICT,
+                            "Prices or stock changed during checkout. If you were charged, contact support with payment ID "
+                                    + paymentId + ".");
+                }
+            } catch (IllegalArgumentException exception) {
+                return paymentError(HttpStatus.CONFLICT,
+                        "Stock changed during checkout. If you were charged, contact support with payment ID "
+                                + paymentId + ".");
+            }
             if ("authorized".equals(gatewayPayment.status())) {
                 gatewayPayment = razorpayService.capturePayment(paymentId, pending.amountPaise());
             }
@@ -287,10 +301,14 @@ public class CartController {
         }
     }
 
-    private List<CartItem> getPricedOrderItems(Cart cart) {
+        private List<CartItem> getPricedOrderItems(Cart cart) {
+        return getPricedOrderItems(cart.getItems());
+    }
+
+    private List<CartItem> getPricedOrderItems(List<CartItem> cartItems) {
         List<CartItem> items = new ArrayList<>();
         Map<Long, Integer> requestedQuantities = new HashMap<>();
-        for (CartItem item : cart.getItems()) {
+        for (CartItem item : cartItems) {
             if (item.getQuantity() <= 0 || item.getRentalPeriodMonths() <= 0) {
                 throw new IllegalArgumentException("Invalid cart quantity or rental period");
             }
@@ -315,8 +333,7 @@ public class CartController {
                     .multiply(BigDecimal.valueOf(item.getQuantity()))
                     .multiply(BigDecimal.valueOf(item.getRentalPeriodMonths())));
         }
-        BigDecimal tax = subtotal.multiply(new BigDecimal("0.05")).setScale(2, RoundingMode.HALF_UP);
-        return subtotal.add(tax).setScale(2, RoundingMode.HALF_UP);
+        return Pricing.grandTotal(subtotal);    
     }
 
     private Rental createRental(User user, List<CartItem> items, String addressLine1, String addressLine2,

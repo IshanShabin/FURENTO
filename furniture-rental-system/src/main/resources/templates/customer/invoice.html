@@ -214,7 +214,13 @@
                 </td>
               </tr>
               <tr>
-                <td colspan="4" class="text-end">Tax (5%)</td>
+                <td
+                  colspan="4"
+                  class="text-end"
+                  th:text="'Tax (' + ${taxPercent} + '%)'"
+                >
+                  Tax (5%)
+                </td>
                 <td
                   class="text-end"
                   th:text="${'₹' + #numbers.formatDecimal(rental.totalAmount - #aggregates.sum(rental.items.![rentAmount]), 1, 'COMMA', 2, 'POINT')}"

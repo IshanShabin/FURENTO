@@ -44,4 +44,16 @@ class CartTest {
         assertEquals(1, cart.getItems().size());
         assertEquals(2, cart.getItems().get(0).getQuantity());
     }
+
+    
+    @Test
+    void taxAndGrandTotalFollowTheItems() {
+        Cart cart = new Cart();
+        cart.addItem(new CartItem(10L, "Chair", new BigDecimal("349.00"), 1, 3));
+
+        assertEquals(new BigDecimal("1047.00"), cart.getTotalPrice());
+        assertEquals(new BigDecimal("52.35"), cart.getTax());
+        assertEquals(new BigDecimal("1099.35"), cart.getGrandTotal());
+    }
+
 }

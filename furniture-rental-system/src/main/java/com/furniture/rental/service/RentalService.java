@@ -3,6 +3,8 @@ package com.furniture.rental.service;
 import com.furniture.rental.entity.*;
 import com.furniture.rental.repository.FurnitureRepository;
 import com.furniture.rental.repository.RentalRepository;
+import com.furniture.rental.util.Pricing;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,7 +63,7 @@ public class RentalService {
             total = total.add(lineAmount);
         }
 
-        BigDecimal tax = total.multiply(new BigDecimal("0.05")).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal tax = Pricing.tax(total);        
         BigDecimal grandTotal = total.add(tax);
         rental.setTotalAmount(grandTotal);
         rental.setOrderDate(LocalDateTime.now());

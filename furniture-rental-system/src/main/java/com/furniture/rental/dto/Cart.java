@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.furniture.rental.util.Pricing;
+
 public class Cart {
     private List<CartItem> items = new ArrayList<>();
 
@@ -79,4 +81,13 @@ public class Cart {
        public int getTotalQuantity() {
        return items.stream().mapToInt(CartItem::getQuantity).sum();
    }
+
+   
+    public BigDecimal getTax() {
+        return Pricing.tax(getTotalPrice());
+    }
+
+    public BigDecimal getGrandTotal() {
+        return Pricing.grandTotal(getTotalPrice());
+    }
 }
