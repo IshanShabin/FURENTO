@@ -3,6 +3,7 @@ package com.furniture.rental.service;
 import com.furniture.rental.entity.Delivery;
 import com.furniture.rental.entity.Furniture;
 import com.furniture.rental.entity.Payment;
+import com.furniture.rental.entity.Penalty;
 import com.furniture.rental.entity.Rental;
 import com.furniture.rental.entity.RentalItem;
 import com.furniture.rental.repository.FurnitureRepository;
@@ -13,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -89,7 +91,6 @@ class RentalServiceTest {
         assertEquals("RETURNED", rental.getStatus());
     }
 
-    
     @Test
     void activeRentalCannotBeCancelled() {
         Furniture chair = new Furniture();
@@ -131,7 +132,6 @@ class RentalServiceTest {
         assertEquals("DELIVERED", rental.getDelivery().getStatus());
     }
 
-        
     @Test
     void acceptingSetsStartAndEndDatesFromRentalPeriod() {
         Rental rental = rentalWith(new Furniture(), 1, "PENDING");
@@ -186,8 +186,6 @@ class RentalServiceTest {
         assertFalse(rentalService.returnRental(99L));
     }
 
-
-    
     @Test
     void acceptingMarksCodPaymentAsPaid() {
         Rental rental = rentalWith(new Furniture(), 1, "PENDING");
@@ -220,7 +218,6 @@ class RentalServiceTest {
         assertEquals(paidAt, payment.getPaymentDate());
     }
 
-    
     @Test
     void transitionTableAllowsOnlyValidMoves() {
         assertTrue(rentalService.canTransition("PENDING", "ACTIVE"));
@@ -251,5 +248,81 @@ class RentalServiceTest {
         assertEquals("ACTIVE", rental.getStatus());
         verify(rentalRepository, never()).save(any());
     }
-    
+
+    @Test
+    void lateReturnCreatesAnUnpaidLateFee() {
+        Furniture chair = new Furniture();
+        chair.setRentalPricePerMonth(new BigDecimal("599"));
+        chair.setStockQuantity(0);
+        Rental rental = rentalWith(chair, 1, "ACTIVE");
+        rental.getItems().get(0).setEndDate(LocalDate.of(2026, 11, 10));
+        when(rentalRepository.findById(1L)).thenReturn(Optional.of(rental));
+
+        assertTrue(rentalService.returnRental(1L, LocalDate.of(2026, 11, 13)));
+
+        assertEquals("RETURNED", rental.getStatus());
+        assertEquals(1, rental.getPenalties().size());
+        Penalty fee = rental.getPenalties().get(0);
+        assertEquals(new BigDecimal("59.90"), fee.getAmount());
+        assertEquals("LATE_RETURN", fee.getReason());
+        assertFalse(fee.isPaid());
+        assertSame(rental, fee.getRental());
+        assertNotNull(fee.getIssuedDate());
+    }
+
+    @Test
+    void lateFeeIsChargedPerUnitForEveryItem() {
+        Furniture chair = new Furniture();
+        chair.setRentalPricePerMonth(new BigDecimal("349"));
+        Rental rental = rentalWith(chair, 2, "ACTIVE");
+        rental.getItems().get(0).setEndDate(LocalDate.of(2026, 11, 1));
+        when(rentalRepository.findById(1L)).thenReturn(Optional.of(rental));
+
+        rentalService.returnRental(1L, LocalDate.of(2026, 11, 6));
+
+        assertEquals(new BigDecimal("116.33"), rental.getPenalties().get(0).getAmount());
+    }
+
+    @Test
+    void returningOnTheDueDateHasNoLateFee() {
+        Furniture chair = new Furniture();
+        chair.setRentalPricePerMonth(new BigDecimal("599"));
+        Rental rental = rentalWith(chair, 1, "ACTIVE");
+        rental.getItems().get(0).setEndDate(LocalDate.of(2026, 11, 13));
+        when(rentalRepository.findById(1L)).thenReturn(Optional.of(rental));
+
+        assertTrue(rentalService.returnRental(1L, LocalDate.of(2026, 11, 13)));
+
+        assertFalse(rental.isPenaltyDue());
+        assertTrue(rental.getPenalties() == null || rental.getPenalties().isEmpty());
+    }
+
+    @Test
+    void rentalWithoutDatesHasNoLateFee() {
+        Furniture chair = new Furniture();
+        chair.setRentalPricePerMonth(new BigDecimal("599"));
+        Rental rental = rentalWith(chair, 1, "ACTIVE");
+        when(rentalRepository.findById(1L)).thenReturn(Optional.of(rental));
+
+        assertTrue(rentalService.returnRental(1L, LocalDate.of(2026, 12, 31)));
+
+        assertFalse(rental.isPenaltyDue());
+    }
+
+    @Test
+    void markPenaltyPaidSettlesOnlyUnpaidMatchingFee() {
+        Penalty fee = new Penalty();
+        fee.setId(5L);
+        fee.setAmount(new BigDecimal("59.90"));
+        Rental rental = rentalWith(new Furniture(), 1, "RETURNED");
+        rental.setPenalties(new ArrayList<>(List.of(fee)));
+        when(rentalRepository.findById(1L)).thenReturn(Optional.of(rental));
+
+        assertTrue(rentalService.markPenaltyPaid(1L, 5L));
+        assertTrue(fee.isPaid());
+        verify(rentalRepository).save(rental);
+
+        assertFalse(rentalService.markPenaltyPaid(1L, 5L));
+        assertFalse(rentalService.markPenaltyPaid(1L, 99L));
+    }
 }

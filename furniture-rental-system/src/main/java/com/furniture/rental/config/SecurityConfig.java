@@ -50,12 +50,12 @@ public class SecurityConfig {
             DaoAuthenticationProvider authenticationProvider) throws Exception {
         http
                 .csrf(csrf -> csrf
-        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-        .ignoringRequestMatchers("/api/auth/login")
-        .ignoringRequestMatchers(request -> {
-            String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-            return header != null && header.startsWith("Bearer ");
-        }))
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .ignoringRequestMatchers("/api/auth/login")
+                        .ignoringRequestMatchers(request -> {
+                            String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+                            return header != null && header.startsWith("Bearer ");
+                        }))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers("/", "/home", "/register", "/login", "/css/**", "/js/**", "/images/**",
@@ -65,7 +65,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/furniture/*/reviews", "/reviews/**").hasRole("CUSTOMER")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/admin/**").hasRole("ADMIN")           //  Same as above
+                        .requestMatchers("/admin/**").hasRole("ADMIN") // Same as above
                         .requestMatchers("/customer/**", "/rent/**", "/cart", "/cart/**", "/reviews/**")
                         .hasRole("CUSTOMER")
                         .anyRequest().authenticated())
@@ -85,19 +85,19 @@ public class SecurityConfig {
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
                         .logoutSuccessHandler((request, response, authentication) -> {
-    String token = jwtService.resolveToken(request);
-    if (token != null) {
-        jwtService.revokeToken(token);
-    }
-    response.addHeader(HttpHeaders.SET_COOKIE, jwtService.clearAuthCookie().toString());
-    response.sendRedirect("/");
-}))
-               .exceptionHandling(exception -> exception
-            .authenticationEntryPoint(entryPoint())
-            .accessDeniedHandler(new JsonAccessDeniedHandler()))
-            .authenticationProvider(authenticationProvider)
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-                return http.build();
+                            String token = jwtService.resolveToken(request);
+                            if (token != null) {
+                                jwtService.revokeToken(token);
+                            }
+                            response.addHeader(HttpHeaders.SET_COOKIE, jwtService.clearAuthCookie().toString());
+                            response.sendRedirect("/");
+                        }))
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(entryPoint())
+                        .accessDeniedHandler(new JsonAccessDeniedHandler()))
+                .authenticationProvider(authenticationProvider)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        return http.build();
     }
 
     @Bean
@@ -106,12 +106,12 @@ public class SecurityConfig {
     }
 
     private AuthenticationEntryPoint entryPoint() {
-    LinkedHashMap<RequestMatcher, AuthenticationEntryPoint> map = new LinkedHashMap<>();
-    map.put(new AntPathRequestMatcher("/api/**"), new JsonAuthenticationEntryPoint());
-    DelegatingAuthenticationEntryPoint entryPoint = new DelegatingAuthenticationEntryPoint(map);
-    entryPoint.setDefaultEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"));
-    return entryPoint;
-}
+        LinkedHashMap<RequestMatcher, AuthenticationEntryPoint> map = new LinkedHashMap<>();
+        map.put(new AntPathRequestMatcher("/api/**"), new JsonAuthenticationEntryPoint());
+        DelegatingAuthenticationEntryPoint entryPoint = new DelegatingAuthenticationEntryPoint(map);
+        entryPoint.setDefaultEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"));
+        return entryPoint;
+    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {

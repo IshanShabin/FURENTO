@@ -107,6 +107,13 @@
                 >
                   Due Jan 01, 2026
                 </div>
+                <div
+                  th:if="${rental.penaltyDue}"
+                  class="small text-danger mt-1"
+                  th:text="${'Late fee due: ₹' + #numbers.formatDecimal(rental.unpaidPenaltyTotal, 1, 'COMMA', 2, 'POINT')}"
+                >
+                  Late fee due: ₹100.00
+                </div>
               </td>
               <td style="padding: 12px">
                 <a

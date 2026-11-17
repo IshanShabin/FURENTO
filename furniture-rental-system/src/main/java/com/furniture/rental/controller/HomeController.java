@@ -32,7 +32,8 @@ public class HomeController {
             return "redirect:/";
         }
         model.addAttribute("furniture", furniture);
-        model.addAttribute("reviews", furniture.getReviews() == null ? java.util.Collections.emptyList() : furniture.getReviews());
+        model.addAttribute("reviews",
+                furniture.getReviews() == null ? java.util.Collections.emptyList() : furniture.getReviews());
         return "furniture-details";
     }
 

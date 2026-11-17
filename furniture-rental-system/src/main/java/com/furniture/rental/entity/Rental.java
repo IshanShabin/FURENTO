@@ -19,7 +19,7 @@ public class Rental {
     private User user;
 
     private LocalDateTime orderDate;
-    
+
     private BigDecimal totalAmount;
 
     private String status; // PENDING, ACTIVE, RETURNED, CANCELLED
@@ -38,28 +38,81 @@ public class Rental {
     @OneToMany(mappedBy = "rental", cascade = CascadeType.ALL)
     private List<Penalty> penalties;
 
-    public Rental() {}
+    public Rental() {
+    }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
-    public LocalDateTime getOrderDate() { return orderDate; }
-    public void setOrderDate(LocalDateTime orderDate) { this.orderDate = orderDate; }
-    public BigDecimal getTotalAmount() { return totalAmount; }
-    public void setTotalAmount(BigDecimal totalAmount) { this.totalAmount = totalAmount; }
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
-    public Payment getPayment() { return payment; }
-    public void setPayment(Payment payment) { this.payment = payment; }
-    public Delivery getDelivery() { return delivery; }
-    public void setDelivery(Delivery delivery) { this.delivery = delivery; }
-    public List<RentalItem> getItems() { return items; }
-    public void setItems(List<RentalItem> items) { this.items = items; }
-    public List<Penalty> getPenalties() { return penalties; }
-    public void setPenalties(List<Penalty> penalties) { this.penalties = penalties; }
+    public Long getId() {
+        return id;
+    }
 
-    
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public LocalDateTime getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(LocalDateTime orderDate) {
+        this.orderDate = orderDate;
+    }
+
+    public BigDecimal getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(BigDecimal totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Payment getPayment() {
+        return payment;
+    }
+
+    public void setPayment(Payment payment) {
+        this.payment = payment;
+    }
+
+    public Delivery getDelivery() {
+        return delivery;
+    }
+
+    public void setDelivery(Delivery delivery) {
+        this.delivery = delivery;
+    }
+
+    public List<RentalItem> getItems() {
+        return items;
+    }
+
+    public void setItems(List<RentalItem> items) {
+        this.items = items;
+    }
+
+    public List<Penalty> getPenalties() {
+        return penalties;
+    }
+
+    public void setPenalties(List<Penalty> penalties) {
+        this.penalties = penalties;
+    }
+
     @Transient
     public LocalDate getDueDate() {
         if (items == null) {
@@ -76,5 +129,21 @@ public class Rental {
     public boolean isOverdue() {
         LocalDate due = getDueDate();
         return "ACTIVE".equals(status) && due != null && LocalDate.now().isAfter(due);
+    }
+
+    @Transient
+    public BigDecimal getUnpaidPenaltyTotal() {
+        if (penalties == null) {
+            return BigDecimal.ZERO;
+        }
+        return penalties.stream()
+                .filter(penalty -> !penalty.isPaid() && penalty.getAmount() != null)
+                .map(Penalty::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    @Transient
+    public boolean isPenaltyDue() {
+        return getUnpaidPenaltyTotal().signum() > 0;
     }
 }

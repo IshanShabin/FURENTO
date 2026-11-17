@@ -27,20 +27,20 @@ public class JwtService {
     public static final String AUTH_COOKIE = "FURENTO_AUTH";
     private static final long JWT_EXPIRY_MS = 86_400_000L;
     private final SecretKey signingKey;
-    private final RevokedTokenRepository revokedTokenRepository;    
+    private final RevokedTokenRepository revokedTokenRepository;
     private final boolean secureCookie;
 
     public JwtService(@Value("${JWT_SECRET:}") String jwtSecret,
-        @Value("${app.jwt.cookie-secure:false}") boolean secureCookie,
-        @Lazy RevokedTokenRepository revokedTokenRepository) {
-    byte[] secretBytes = jwtSecret == null ? new byte[0] : jwtSecret.getBytes(StandardCharsets.UTF_8);
-    if (secretBytes.length < 32) {
-        throw new IllegalStateException("Set JWT_SECRET to a private value of at least 32 characters.");
+            @Value("${app.jwt.cookie-secure:false}") boolean secureCookie,
+            @Lazy RevokedTokenRepository revokedTokenRepository) {
+        byte[] secretBytes = jwtSecret == null ? new byte[0] : jwtSecret.getBytes(StandardCharsets.UTF_8);
+        if (secretBytes.length < 32) {
+            throw new IllegalStateException("Set JWT_SECRET to a private value of at least 32 characters.");
+        }
+        this.signingKey = Keys.hmacShaKeyFor(secretBytes);
+        this.secureCookie = secureCookie;
+        this.revokedTokenRepository = revokedTokenRepository;
     }
-    this.signingKey = Keys.hmacShaKeyFor(secretBytes);
-    this.secureCookie = secureCookie;
-    this.revokedTokenRepository = revokedTokenRepository;
-}
 
     public String generateToken(UserDetails userDetails) {
         Date now = new Date();
@@ -48,7 +48,7 @@ public class JwtService {
 
         return Jwts.builder()
                 .id(UUID.randomUUID().toString())
-                .subject(userDetails.getUsername()) //same as below
+                .subject(userDetails.getUsername()) // same as below
                 .subject(userDetails.getUsername())
                 .claim("roles", userDetails.getAuthorities().stream()
                         .map(authority -> authority.getAuthority())
@@ -93,35 +93,35 @@ public class JwtService {
     }
 
     public void revokeToken(String token) {
-    try {
-        Claims claims = parseClaims(token);
-        if (claims.getId() != null) {
-            revokedTokenRepository.save(new RevokedToken(claims.getId(), claims.getExpiration().toInstant()));
+        try {
+            Claims claims = parseClaims(token);
+            if (claims.getId() != null) {
+                revokedTokenRepository.save(new RevokedToken(claims.getId(), claims.getExpiration().toInstant()));
+            }
+        } catch (Exception ignored) {
+            // invalid or already expired tokens need no revoking
         }
-    } catch (Exception ignored) {
-        // invalid or already expired tokens need no revoking
+        revokedTokenRepository.deleteByExpiresAtBefore(Instant.now());
     }
-    revokedTokenRepository.deleteByExpiresAtBefore(Instant.now());
-}
 
-private boolean isRevoked(String tokenId) {
-    return tokenId != null && revokedTokenRepository.existsById(tokenId);
-}
+    private boolean isRevoked(String tokenId) {
+        return tokenId != null && revokedTokenRepository.existsById(tokenId);
+    }
 
     public String resolveToken(HttpServletRequest request) {
-    String header = request.getHeader("Authorization");
-    if (header != null && header.startsWith("Bearer ")) {
-        return header.substring(7);
-    }
-    Cookie[] cookies = request.getCookies();
-    if (cookies != null) {
-        for (Cookie cookie : cookies) {
-            if (AUTH_COOKIE.equals(cookie.getName())) {
-                return cookie.getValue();
+        String header = request.getHeader("Authorization");
+        if (header != null && header.startsWith("Bearer ")) {
+            return header.substring(7);
+        }
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (AUTH_COOKIE.equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
             }
         }
-    }
-    return null;
+        return null;
     }
 
     private Claims parseClaims(String token) {

@@ -16,25 +16,72 @@ public class Penalty {
     private Rental rental;
 
     private BigDecimal amount;
-    
+
     private String reason; // DAMAGE, LATE_RETURN
 
     private LocalDateTime issuedDate;
-    
+
     private boolean paid;
 
-    public Penalty() {}
+    @Column(length = 255)
+    private String description;
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public Rental getRental() { return rental; }
-    public void setRental(Rental rental) { this.rental = rental; }
-    public BigDecimal getAmount() { return amount; }
-    public void setAmount(BigDecimal amount) { this.amount = amount; }
-    public String getReason() { return reason; }
-    public void setReason(String reason) { this.reason = reason; }
-    public LocalDateTime getIssuedDate() { return issuedDate; }
-    public void setIssuedDate(LocalDateTime issuedDate) { this.issuedDate = issuedDate; }
-    public boolean isPaid() { return paid; }
-    public void setPaid(boolean paid) { this.paid = paid; }
+    public Penalty() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Rental getRental() {
+        return rental;
+    }
+
+    public void setRental(Rental rental) {
+        this.rental = rental;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
+    public LocalDateTime getIssuedDate() {
+        return issuedDate;
+    }
+
+    public void setIssuedDate(LocalDateTime issuedDate) {
+        this.issuedDate = issuedDate;
+    }
+
+    public boolean isPaid() {
+        return paid;
+    }
+
+    public void setPaid(boolean paid) {
+        this.paid = paid;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

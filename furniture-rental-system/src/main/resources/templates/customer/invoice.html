@@ -237,6 +237,40 @@
                   ₹628.95
                 </td>
               </tr>
+              <tr th:each="penalty : ${rental.penalties}">
+                <td colspan="4" class="text-end">
+                  Late fee
+                  <span th:if="${penalty.paid}" class="badge bg-success ms-1"
+                    >PAID</span
+                  >
+                  <span
+                    th:unless="${penalty.paid}"
+                    class="badge bg-warning text-dark ms-1"
+                    >UNPAID</span
+                  >
+                  <div
+                    class="small text-muted"
+                    th:text="${penalty.description}"
+                  >
+                    Returned 3 days after the due date
+                  </div>
+                </td>
+                <td
+                  class="text-end"
+                  th:text="${'₹' + #numbers.formatDecimal(penalty.amount, 1, 'COMMA', 2, 'POINT')}"
+                >
+                  ₹59.90
+                </td>
+              </tr>
+              <tr th:if="${rental.penaltyDue}">
+                <td colspan="4" class="text-end fw-bold">Amount due</td>
+                <td
+                  class="text-end fw-bold text-danger"
+                  th:text="${'₹' + #numbers.formatDecimal(rental.unpaidPenaltyTotal, 1, 'COMMA', 2, 'POINT')}"
+                >
+                  ₹59.90
+                </td>
+              </tr>
             </tfoot>
           </table>
         </div>

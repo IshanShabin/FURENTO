@@ -45,7 +45,6 @@ class CartTest {
         assertEquals(2, cart.getItems().get(0).getQuantity());
     }
 
-    
     @Test
     void taxAndGrandTotalFollowTheItems() {
         Cart cart = new Cart();

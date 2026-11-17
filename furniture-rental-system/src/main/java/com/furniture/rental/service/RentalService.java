@@ -12,9 +12,11 @@ import java.util.Map;
 import java.util.Set;
 //import java.util.Objects;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
+//import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -26,7 +28,6 @@ public class RentalService {
     @Autowired
     private FurnitureRepository furnitureRepository;
 
-    
     private static final Map<String, Set<String>> ALLOWED_TRANSITIONS = Map.of(
             "PENDING", Set.of("ACTIVE", "CANCELLED"),
             "ACTIVE", Set.of("RETURNED"),
@@ -63,7 +64,7 @@ public class RentalService {
             total = total.add(lineAmount);
         }
 
-        BigDecimal tax = Pricing.tax(total);        
+        BigDecimal tax = Pricing.tax(total);
         BigDecimal grandTotal = total.add(tax);
         rental.setTotalAmount(grandTotal);
         rental.setOrderDate(LocalDateTime.now());
@@ -95,18 +96,18 @@ public class RentalService {
 
     @Transactional
     public void updateStatus(Long id, String status) {
-    Rental rental = rentalRepository.findById(id).orElse(null);
+        Rental rental = rentalRepository.findById(id).orElse(null);
         if (rental == null) {
             return;
         }
-                if (!"ACTIVE".equals(status)) {
+        if (!"ACTIVE".equals(status)) {
             throw new IllegalArgumentException(
                     "Use cancelRental or returnRental to move a rental to " + status);
         }
         if (!canTransition(rental.getStatus(), status)) {
             return;
         }
-                    rental.setStatus(status);
+        rental.setStatus(status);
         if ("ACTIVE".equals(status)) {
             LocalDate start = LocalDate.now();
             if (rental.getItems() != null) {
@@ -119,7 +120,7 @@ public class RentalService {
                 rental.getDelivery().setStatus("DELIVERED");
                 rental.getDelivery().setDeliveryDate(LocalDateTime.now());
             }
-                        Payment payment = rental.getPayment();
+            Payment payment = rental.getPayment();
             if (payment != null && "COD".equals(payment.getPaymentMethod())
                     && "PENDING".equals(payment.getStatus())) {
                 payment.setStatus("PAID");
@@ -132,21 +133,21 @@ public class RentalService {
 
     @Transactional
     public boolean cancelRental(Long id) {
-    Rental rental = rentalRepository.findById(id).orElse(null);
-    if (rental == null) {
-        return false;
-    }
-                if (!canTransition(rental.getStatus(), "CANCELLED")) {
-        return false;
-    }
-
-    if (rental.getItems() != null) {
-        for (RentalItem item : rental.getItems()) {
-            Furniture furniture = item.getFurniture();
-            furniture.setStockQuantity(furniture.getStockQuantity() + item.getQuantity());
-            furnitureRepository.save(furniture);
+        Rental rental = rentalRepository.findById(id).orElse(null);
+        if (rental == null) {
+            return false;
         }
-    }
+        if (!canTransition(rental.getStatus(), "CANCELLED")) {
+            return false;
+        }
+
+        if (rental.getItems() != null) {
+            for (RentalItem item : rental.getItems()) {
+                Furniture furniture = item.getFurniture();
+                furniture.setStockQuantity(furniture.getStockQuantity() + item.getQuantity());
+                furnitureRepository.save(furniture);
+            }
+        }
 
         rental.setStatus("CANCELLED");
         if (rental.getDelivery() != null) {
@@ -159,12 +160,16 @@ public class RentalService {
         return true;
     }
 
-    
     @Transactional
     public boolean returnRental(Long id) {
+        return returnRental(id, LocalDate.now());
+    }
+
+    @Transactional
+    public boolean returnRental(Long id, LocalDate returnDate) {
         Rental rental = rentalRepository.findById(id).orElse(null);
-        if (rental == null || !canTransition(rental.getStatus(), "RETURNED")) {           
-             return false;
+        if (rental == null || !canTransition(rental.getStatus(), "RETURNED")) {
+            return false;
         }
 
         if (rental.getItems() != null) {
@@ -175,6 +180,8 @@ public class RentalService {
             }
         }
 
+        addLateFeeIfOverdue(rental, returnDate);
+
         rental.setStatus("RETURNED");
         if (rental.getDelivery() != null) {
             rental.getDelivery().setStatus("PICKED_UP");
@@ -184,7 +191,52 @@ public class RentalService {
         return true;
     }
 
-        public Rental saveRental(Rental rental) {
+    private void addLateFeeIfOverdue(Rental rental, LocalDate returnDate) {
+        LocalDate due = rental.getDueDate();
+        if (due == null || !returnDate.isAfter(due) || rental.getItems() == null) {
+            return;
+        }
+        long daysLate = ChronoUnit.DAYS.between(due, returnDate);
+        BigDecimal fee = BigDecimal.ZERO;
+        for (RentalItem item : rental.getItems()) {
+            fee = fee.add(Pricing.lateFee(item.getFurniture().getRentalPricePerMonth(),
+                    item.getQuantity(), daysLate));
+        }
+        if (fee.signum() <= 0) {
+            return;
+        }
+
+        Penalty penalty = new Penalty();
+        penalty.setRental(rental);
+        penalty.setReason("LATE_RETURN");
+        penalty.setAmount(fee);
+        penalty.setIssuedDate(LocalDateTime.now());
+        penalty.setPaid(false);
+        penalty.setDescription("Returned " + daysLate + (daysLate == 1 ? " day" : " days")
+                + " after the due date (" + due + ")");
+        if (rental.getPenalties() == null) {
+            rental.setPenalties(new ArrayList<>());
+        }
+        rental.getPenalties().add(penalty);
+    }
+
+    @Transactional
+    public boolean markPenaltyPaid(Long rentalId, Long penaltyId) {
+        Rental rental = rentalRepository.findById(rentalId).orElse(null);
+        if (rental == null || rental.getPenalties() == null) {
+            return false;
+        }
+        for (Penalty penalty : rental.getPenalties()) {
+            if (penaltyId.equals(penalty.getId()) && !penalty.isPaid()) {
+                penalty.setPaid(true);
+                rentalRepository.save(rental);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Rental saveRental(Rental rental) {
         return rentalRepository.save(rental);
     }
 }

@@ -81,7 +81,6 @@ public class FurnitureService {
         furnitureRepository.deleteById(id);
     }
 
-
     @Autowired
     private RentalItemRepository rentalItemRepository;
 

@@ -9,19 +9,18 @@ import com.furniture.rental.util.Pricing;
 public class Cart {
     private List<CartItem> items = new ArrayList<>();
 
-
     public List<CartItem> getItems() {
         return items;
     }
 
-       public BigDecimal getTotalPrice() {
-       return items.stream()
-               .map(i -> i.getPricePerMonth()
-                       .multiply(BigDecimal.valueOf(i.getQuantity()))
-                       .multiply(BigDecimal.valueOf(i.getRentalPeriodMonths())))
-               .reduce(BigDecimal.ZERO, BigDecimal::add);
-   }
-   
+    public BigDecimal getTotalPrice() {
+        return items.stream()
+                .map(i -> i.getPricePerMonth()
+                        .multiply(BigDecimal.valueOf(i.getQuantity()))
+                        .multiply(BigDecimal.valueOf(i.getRentalPeriodMonths())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
     public void setItems(List<CartItem> items) {
         this.items = items;
     }
@@ -40,9 +39,9 @@ public class Cart {
 
         int existingQuantity = items.stream()
                 .filter(existing -> existing.getFurnitureId() != null
-                && existing.getFurnitureId().equals(item.getFurnitureId()))
-            .mapToInt(CartItem::getQuantity)
-            .sum();
+                        && existing.getFurnitureId().equals(item.getFurnitureId()))
+                .mapToInt(CartItem::getQuantity)
+                .sum();
 
         if (existingQuantity + item.getQuantity() > availableStock) {
             throw new IllegalArgumentException("Requested quantity exceeds available stock");
@@ -67,11 +66,11 @@ public class Cart {
         if (index >= 0 && index < items.size())
             items.remove(index);
     }
-       public int getTotalQuantity() {
-       return items.stream().mapToInt(CartItem::getQuantity).sum();
-   }
 
-   
+    public int getTotalQuantity() {
+        return items.stream().mapToInt(CartItem::getQuantity).sum();
+    }
+
     public BigDecimal getTax() {
         return Pricing.tax(getTotalPrice());
     }

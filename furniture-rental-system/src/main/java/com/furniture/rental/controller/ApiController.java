@@ -64,7 +64,8 @@ public class ApiController {
 
         static FurnitureResponse from(Furniture f) {
             String image = (f.getImages() != null && !f.getImages().isEmpty())
-                    ? f.getImages().get(0).getImageUrl() : null;
+                    ? f.getImages().get(0).getImageUrl()
+                    : null;
             return new FurnitureResponse(f.getId(), f.getName(),
                     f.getCategory() != null ? f.getCategory().getName() : null,
                     f.getDescription(), f.getRentalPricePerMonth(), f.getStockQuantity(),

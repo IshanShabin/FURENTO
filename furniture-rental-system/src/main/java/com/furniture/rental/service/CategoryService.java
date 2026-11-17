@@ -34,7 +34,7 @@ public class CategoryService {
     private FurnitureRepository furnitureRepository;
 
     public boolean hasFurniture(Long categoryId) {
-    return !furnitureRepository.findByCategoryId(categoryId).isEmpty();
+        return !furnitureRepository.findByCategoryId(categoryId).isEmpty();
     }
 
 }

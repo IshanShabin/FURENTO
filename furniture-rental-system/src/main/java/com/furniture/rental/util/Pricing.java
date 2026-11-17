@@ -23,4 +23,20 @@ public final class Pricing {
     public static String taxPercentLabel() {
         return TAX_RATE.movePointRight(2).stripTrailingZeros().toPlainString();
     }
+
+    public static final int LATE_FEE_DAYS_PER_MONTH = 30;
+
+    /**
+     * Late fee for one item: one day's rent (monthly price / 30) per unit per day
+     * late.
+     */
+    public static BigDecimal lateFee(BigDecimal monthlyPrice, int quantity, long daysLate) {
+        if (daysLate <= 0 || quantity <= 0) {
+            return BigDecimal.ZERO.setScale(2);
+        }
+        return monthlyPrice
+                .multiply(BigDecimal.valueOf(quantity))
+                .multiply(BigDecimal.valueOf(daysLate))
+                .divide(BigDecimal.valueOf(LATE_FEE_DAYS_PER_MONTH), 2, RoundingMode.HALF_UP);
+    }
 }

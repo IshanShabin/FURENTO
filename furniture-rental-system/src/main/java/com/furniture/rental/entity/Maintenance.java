@@ -16,21 +16,51 @@ public class Maintenance {
     private Furniture furniture;
 
     private String description;
-    
+
     private BigDecimal cost;
-    
+
     private LocalDate maintenanceDate;
 
-    public Maintenance() {}
+    public Maintenance() {
+    }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public Furniture getFurniture() { return furniture; }
-    public void setFurniture(Furniture furniture) { this.furniture = furniture; }
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-    public BigDecimal getCost() { return cost; }
-    public void setCost(BigDecimal cost) { this.cost = cost; }
-    public LocalDate getMaintenanceDate() { return maintenanceDate; }
-    public void setMaintenanceDate(LocalDate maintenanceDate) { this.maintenanceDate = maintenanceDate; }
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Furniture getFurniture() {
+        return furniture;
+    }
+
+    public void setFurniture(Furniture furniture) {
+        this.furniture = furniture;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public BigDecimal getCost() {
+        return cost;
+    }
+
+    public void setCost(BigDecimal cost) {
+        this.cost = cost;
+    }
+
+    public LocalDate getMaintenanceDate() {
+        return maintenanceDate;
+    }
+
+    public void setMaintenanceDate(LocalDate maintenanceDate) {
+        this.maintenanceDate = maintenanceDate;
+    }
 }

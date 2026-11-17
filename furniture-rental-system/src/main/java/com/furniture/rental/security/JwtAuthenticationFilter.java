@@ -51,18 +51,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     // private String resolveToken(HttpServletRequest request) {
-    //     String authorizationHeader = request.getHeader("Authorization");
-    //     if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-    //         return authorizationHeader.substring(7);
-    //     }
-    //     Cookie[] cookies = request.getCookies();
-    //     if (cookies != null) {
-    //         for (Cookie cookie : cookies) {
-    //             if (JwtService.AUTH_COOKIE.equals(cookie.getName())) {
-    //                 return cookie.getValue();
-    //             }
-    //         }
-    //     }
-    //     return null;
+    // String authorizationHeader = request.getHeader("Authorization");
+    // if (authorizationHeader != null && authorizationHeader.startsWith("Bearer "))
+    // {
+    // return authorizationHeader.substring(7);
+    // }
+    // Cookie[] cookies = request.getCookies();
+    // if (cookies != null) {
+    // for (Cookie cookie : cookies) {
+    // if (JwtService.AUTH_COOKIE.equals(cookie.getName())) {
+    // return cookie.getValue();
+    // }
+    // }
+    // }
+    // return null;
     // }
 }

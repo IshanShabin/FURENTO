@@ -24,4 +24,16 @@ class PricingTest {
     void taxPercentLabelMatchesTheRate() {
         assertEquals("5", Pricing.taxPercentLabel());
     }
+
+    @Test
+    void lateFeeIsOneDaysRentPerUnitPerDayLate() {
+        assertEquals(new BigDecimal("59.90"), Pricing.lateFee(new BigDecimal("599"), 1, 3));
+        assertEquals(new BigDecimal("116.33"), Pricing.lateFee(new BigDecimal("349"), 2, 5));
+    }
+
+    @Test
+    void noLateFeeWhenNotLate() {
+        assertEquals(new BigDecimal("0.00"), Pricing.lateFee(new BigDecimal("599"), 1, 0));
+        assertEquals(new BigDecimal("0.00"), Pricing.lateFee(new BigDecimal("599"), 1, -2));
+    }
 }

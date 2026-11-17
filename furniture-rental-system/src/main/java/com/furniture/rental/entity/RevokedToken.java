@@ -14,15 +14,27 @@ public class RevokedToken {
     @Column(nullable = false)
     private Instant expiresAt;
 
-    public RevokedToken() {}
+    public RevokedToken() {
+    }
 
     public RevokedToken(String tokenId, Instant expiresAt) {
         this.tokenId = tokenId;
         this.expiresAt = expiresAt;
     }
 
-    public String getTokenId() { return tokenId; }
-    public void setTokenId(String tokenId) { this.tokenId = tokenId; }
-    public Instant getExpiresAt() { return expiresAt; }
-    public void setExpiresAt(Instant expiresAt) { this.expiresAt = expiresAt; }
+    public String getTokenId() {
+        return tokenId;
+    }
+
+    public void setTokenId(String tokenId) {
+        this.tokenId = tokenId;
+    }
+
+    public Instant getExpiresAt() {
+        return expiresAt;
+    }
+
+    public void setExpiresAt(Instant expiresAt) {
+        this.expiresAt = expiresAt;
+    }
 }

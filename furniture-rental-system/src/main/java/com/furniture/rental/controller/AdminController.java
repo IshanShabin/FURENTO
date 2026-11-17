@@ -41,24 +41,24 @@ public class AdminController {
         List<Rental> rentals = rentalService.getAllRentals();
         List<Furniture> furniture = furnitureService.getAllFurniture();
         List<Furniture> lowStockFurniture = furniture.stream()
-            .filter(item -> item.getStockQuantity() > 0 && item.getStockQuantity() <= 2)
-            .sorted(Comparator.comparingInt(Furniture::getStockQuantity))
-            .limit(5)
-            .toList();
+                .filter(item -> item.getStockQuantity() > 0 && item.getStockQuantity() <= 2)
+                .sorted(Comparator.comparingInt(Furniture::getStockQuantity))
+                .limit(5)
+                .toList();
 
         model.addAttribute("totalRentals", rentals.size());
         model.addAttribute("pendingRentals", rentals.stream()
-            .filter(rental -> "PENDING".equalsIgnoreCase(rental.getStatus())).count());
+                .filter(rental -> "PENDING".equalsIgnoreCase(rental.getStatus())).count());
         model.addAttribute("activeRentals", rentals.stream()
-            .filter(rental -> "ACTIVE".equalsIgnoreCase(rental.getStatus())).count());
+                .filter(rental -> "ACTIVE".equalsIgnoreCase(rental.getStatus())).count());
         model.addAttribute("availableFurniture", furniture.stream().filter(Furniture::isAvailable).count());
         model.addAttribute("lowStockCount", furniture.stream()
-            .filter(item -> item.getStockQuantity() > 0 && item.getStockQuantity() <= 2).count());
+                .filter(item -> item.getStockQuantity() > 0 && item.getStockQuantity() <= 2).count());
         model.addAttribute("recentRentals", rentals.stream()
-            .sorted(Comparator.comparing(Rental::getOrderDate,
-                Comparator.nullsLast(Comparator.reverseOrder())))
-            .limit(5)
-            .toList());
+                .sorted(Comparator.comparing(Rental::getOrderDate,
+                        Comparator.nullsLast(Comparator.reverseOrder())))
+                .limit(5)
+                .toList());
         model.addAttribute("lowStockFurniture", lowStockFurniture);
         return "admin/dashboard";
     }
@@ -209,7 +209,8 @@ public class AdminController {
         try {
             furnitureImageStorageService.deleteManagedImage(imageUrl);
         } catch (IOException exception) {
-            redirectAttributes.addFlashAttribute("imageError", "Image removed from the product, but its file could not be deleted.");
+            redirectAttributes.addFlashAttribute("imageError",
+                    "Image removed from the product, but its file could not be deleted.");
         }
         return "redirect:/admin/furniture/edit/" + furnitureId;
     }
@@ -224,71 +225,81 @@ public class AdminController {
     // Delete Actions
     @PostMapping("/categories/delete/{id}")
     public String deleteCategory(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-    if (categoryService.hasFurniture(id)) {
-        redirectAttributes.addFlashAttribute("categoryError",
-                "This category still has furniture. Move or delete those items first.");
-    } else {
-        categoryService.deleteCategory(id);
-        redirectAttributes.addFlashAttribute("categoryMessage", "Category deleted.");
-    }
-    return "redirect:/admin/categories";
+        if (categoryService.hasFurniture(id)) {
+            redirectAttributes.addFlashAttribute("categoryError",
+                    "This category still has furniture. Move or delete those items first.");
+        } else {
+            categoryService.deleteCategory(id);
+            redirectAttributes.addFlashAttribute("categoryMessage", "Category deleted.");
+        }
+        return "redirect:/admin/categories";
     }
 
     @PostMapping("/furniture/delete/{id}")
     public String deleteFurniture(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-    Furniture furniture = furnitureService.getFurnitureById(id);
-    if (furniture == null) {
-        return "redirect:/admin/furniture";
-    }
-    if (furnitureService.isInRentals(id)) {
-        redirectAttributes.addFlashAttribute("furnitureError",
-                "This item is part of existing rentals and can't be deleted. Set its stock to 0 to mark it out of stock instead.");
-        return "redirect:/admin/furniture";
-    }
-
-    List<String> imageUrls = furniture.getImages() == null ? List.of()
-            : furniture.getImages().stream().map(FurnitureImage::getImageUrl).toList();
-    furnitureService.deleteFurniture(id);
-    for (String imageUrl : imageUrls) {
-        try {
-            furnitureImageStorageService.deleteManagedImage(imageUrl);
-        } catch (IOException ignored) {
-            // the leftover file can be removed from the upload folder later
+        Furniture furniture = furnitureService.getFurnitureById(id);
+        if (furniture == null) {
+            return "redirect:/admin/furniture";
         }
-    }
-    redirectAttributes.addFlashAttribute("furnitureMessage", "Furniture deleted.");
-    return "redirect:/admin/furniture";
-    }
+        if (furnitureService.isInRentals(id)) {
+            redirectAttributes.addFlashAttribute("furnitureError",
+                    "This item is part of existing rentals and can't be deleted. Set its stock to 0 to mark it out of stock instead.");
+            return "redirect:/admin/furniture";
+        }
 
+        List<String> imageUrls = furniture.getImages() == null ? List.of()
+                : furniture.getImages().stream().map(FurnitureImage::getImageUrl).toList();
+        furnitureService.deleteFurniture(id);
+        for (String imageUrl : imageUrls) {
+            try {
+                furnitureImageStorageService.deleteManagedImage(imageUrl);
+            } catch (IOException ignored) {
+                // the leftover file can be removed from the upload folder later
+            }
+        }
+        redirectAttributes.addFlashAttribute("furnitureMessage", "Furniture deleted.");
+        return "redirect:/admin/furniture";
+    }
 
     @PostMapping("/rentals/accept/{id}")
-public String acceptRental(@PathVariable Long id) {
-    rentalService.updateStatus(id, "ACTIVE");
-    return "redirect:/admin/rentals";
-}
-
-@PostMapping("/rentals/cancel/{id}")
-public String cancelRental(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-    Rental rental = rentalService.getRentalById(id);
-    boolean paidOnline = rental != null && rental.getPayment() != null
-            && "PAID".equals(rental.getPayment().getStatus());
-    if (rentalService.cancelRental(id)) {
-        redirectAttributes.addFlashAttribute("rentalMessage", paidOnline
-                ? "Rental cancelled and stock restored. This order was paid online, so refund it manually in Razorpay."
-                : "Rental cancelled and stock restored.");
-    } else {
-            redirectAttributes.addFlashAttribute("rentalError", "Only pending rentals can be cancelled.");    }
-    return "redirect:/admin/rentals";
+    public String acceptRental(@PathVariable Long id) {
+        rentalService.updateStatus(id, "ACTIVE");
+        return "redirect:/admin/rentals";
     }
 
-
-@PostMapping("/rentals/return/{id}")
-public String returnRental(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-    if (rentalService.returnRental(id)) {
-        redirectAttributes.addFlashAttribute("rentalMessage", "Rental marked as returned and stock restored.");
-    } else {
-        redirectAttributes.addFlashAttribute("rentalError", "Only active rentals can be marked as returned.");
+    @PostMapping("/rentals/cancel/{id}")
+    public String cancelRental(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        Rental rental = rentalService.getRentalById(id);
+        boolean paidOnline = rental != null && rental.getPayment() != null
+                && "PAID".equals(rental.getPayment().getStatus());
+        if (rentalService.cancelRental(id)) {
+            redirectAttributes.addFlashAttribute("rentalMessage", paidOnline
+                    ? "Rental cancelled and stock restored. This order was paid online, so refund it manually in Razorpay."
+                    : "Rental cancelled and stock restored.");
+        } else {
+            redirectAttributes.addFlashAttribute("rentalError", "Only pending rentals can be cancelled.");
+        }
+        return "redirect:/admin/rentals";
     }
-    return "redirect:/admin/rentals";
+
+    @PostMapping("/rentals/return/{id}")
+    public String returnRental(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        if (rentalService.returnRental(id)) {
+            redirectAttributes.addFlashAttribute("rentalMessage", "Rental marked as returned and stock restored.");
+        } else {
+            redirectAttributes.addFlashAttribute("rentalError", "Only active rentals can be marked as returned.");
+        }
+        return "redirect:/admin/rentals";
+    }
+
+    @PostMapping("/rentals/{rentalId}/penalties/{penaltyId}/paid")
+    public String markPenaltyPaid(@PathVariable Long rentalId, @PathVariable Long penaltyId,
+            RedirectAttributes redirectAttributes) {
+        if (rentalService.markPenaltyPaid(rentalId, penaltyId)) {
+            redirectAttributes.addFlashAttribute("rentalMessage", "Late fee marked as paid.");
+        } else {
+            redirectAttributes.addFlashAttribute("rentalError", "That late fee was not found or is already paid.");
+        }
+        return "redirect:/admin/rentals";
     }
 }

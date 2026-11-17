@@ -63,23 +63,24 @@ public class CustomerController {
         return "customer/invoice";
     }
 
-        @PostMapping("/rental/{id}/cancel")
-        public String cancelRental(@PathVariable Long id, Authentication auth,
-        RedirectAttributes redirectAttributes) {
+    @PostMapping("/rental/{id}/cancel")
+    public String cancelRental(@PathVariable Long id, Authentication auth,
+            RedirectAttributes redirectAttributes) {
         Rental rental = rentalService.getRentalById(id);
         if (rental == null || !rental.getUser().getUsername().equals(auth.getName())) {
-        return "redirect:/customer/dashboard";
+            return "redirect:/customer/dashboard";
         }
         boolean paidOnline = rental.getPayment() != null && "PAID".equals(rental.getPayment().getStatus());
         if (!"PENDING".equals(rental.getStatus())) {
-        redirectAttributes.addFlashAttribute("rentalError", "Only pending rentals can be cancelled.");
+            redirectAttributes.addFlashAttribute("rentalError", "Only pending rentals can be cancelled.");
         } else if (paidOnline) {
-        redirectAttributes.addFlashAttribute("rentalError",
-                "Paid orders can't be cancelled online yet. Please contact support@furento.com.");
+            redirectAttributes.addFlashAttribute("rentalError",
+                    "Paid orders can't be cancelled online yet. Please contact support@furento.com.");
         } else if (rentalService.cancelRental(id)) {
-        redirectAttributes.addFlashAttribute("rentalMessage", "Your rental was cancelled.");
+            redirectAttributes.addFlashAttribute("rentalMessage", "Your rental was cancelled.");
         } else {
-        redirectAttributes.addFlashAttribute("rentalError", "Only pending rentals can be cancelled.");        }
+            redirectAttributes.addFlashAttribute("rentalError", "Only pending rentals can be cancelled.");
+        }
         return "redirect:/customer/dashboard";
     }
 

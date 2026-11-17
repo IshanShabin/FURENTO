@@ -114,7 +114,8 @@ public class DataSeeder implements CommandLineRunner {
         }
 
         private void seedFurniture() throws Exception {
-                JsonNode catalog = objectMapper.readTree(new ClassPathResource("furniture-catalog.json").getInputStream());
+                JsonNode catalog = objectMapper
+                                .readTree(new ClassPathResource("furniture-catalog.json").getInputStream());
                 int added = 0;
 
                 for (JsonNode item : catalog) {

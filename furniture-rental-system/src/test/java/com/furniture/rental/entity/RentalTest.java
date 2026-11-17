@@ -2,7 +2,9 @@ package com.furniture.rental.entity;
 
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -67,5 +69,31 @@ class RentalTest {
     @Test
     void rentalWithoutDatesIsNotOverdue() {
         assertFalse(rental("ACTIVE", itemEndingOn(null)).isOverdue());
+    }
+
+    @Test
+    void unpaidPenaltyTotalSumsOnlyUnpaidFees() {
+        Rental rental = new Rental();
+        rental.setPenalties(new ArrayList<>(List.of(
+                penalty("59.90", false), penalty("20.00", false), penalty("100.00", true))));
+
+        assertEquals(new BigDecimal("79.90"), rental.getUnpaidPenaltyTotal());
+        assertTrue(rental.isPenaltyDue());
+    }
+
+    @Test
+    void noPenaltyDueWhenAllPaidOrNone() {
+        assertFalse(new Rental().isPenaltyDue());
+
+        Rental paid = new Rental();
+        paid.setPenalties(new ArrayList<>(List.of(penalty("59.90", true))));
+        assertFalse(paid.isPenaltyDue());
+    }
+
+    private Penalty penalty(String amount, boolean paid) {
+        Penalty penalty = new Penalty();
+        penalty.setAmount(new BigDecimal(amount));
+        penalty.setPaid(paid);
+        return penalty;
     }
 }

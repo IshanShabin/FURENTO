@@ -68,6 +68,28 @@
               >
                 Due Jan 01, 2026
               </div>
+              <div th:each="penalty : ${rental.penalties}" class="small mt-1">
+                <span
+                  th:text="${'Late fee ₹' + #numbers.formatDecimal(penalty.amount, 1, 'COMMA', 2, 'POINT')}"
+                  >Late fee ₹100.00</span
+                >
+                <span th:if="${penalty.paid}" class="badge bg-success ms-1"
+                  >PAID</span
+                >
+                <form
+                  th:unless="${penalty.paid}"
+                  th:action="@{'/admin/rentals/' + ${rental.id} + '/penalties/' + ${penalty.id} + '/paid'}"
+                  method="post"
+                  class="d-inline ms-1"
+                >
+                  <button
+                    type="submit"
+                    class="btn btn-sm btn-outline-success py-0"
+                  >
+                    Mark paid
+                  </button>
+                </form>
+              </div>
             </td>
             <td style="padding: 12px">
               <form

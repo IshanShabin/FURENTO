@@ -31,26 +31,26 @@ public class AuthApiController {
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestParam String username,
-        @RequestParam String password) {
-    try {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(username, password));
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String token = jwtService.generateToken(userDetails);
-        return ResponseEntity.ok(Map.of("token", token, "username", userDetails.getUsername()));
-    } catch (AuthenticationException ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(Map.of("message", "Invalid username or password."));
+            @RequestParam String password) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(username, password));
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String token = jwtService.generateToken(userDetails);
+            return ResponseEntity.ok(Map.of("token", token, "username", userDetails.getUsername()));
+        } catch (AuthenticationException ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Invalid username or password."));
+        }
     }
-}
 
-@PostMapping("/logout")
-public ResponseEntity<Map<String, String>> logout(HttpServletRequest request) {
-    String token = jwtService.resolveToken(request);
-    if (token != null) {
-        jwtService.revokeToken(token);
+    @PostMapping("/logout")
+    public ResponseEntity<Map<String, String>> logout(HttpServletRequest request) {
+        String token = jwtService.resolveToken(request);
+        if (token != null) {
+            jwtService.revokeToken(token);
+        }
+        return ResponseEntity.ok(Map.of("message", "Logged out."));
     }
-    return ResponseEntity.ok(Map.of("message", "Logged out."));
-}
 
 }
