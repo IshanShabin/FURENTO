@@ -32,3 +32,8 @@ furniture-rental-system.zip_expanded/
 # Temporary files
 *.tmp
 *.bak
+
+
+# Local run script with real secrets and the generated JWT key
+run-local.ps1
+.jwt-secret.local

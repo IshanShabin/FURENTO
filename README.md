@@ -32,6 +32,8 @@ FURENTO is a full-stack furniture rental platform built as a portfolio project. 
 
 - Accepting an order sets each item's start and end date, marks the delivery as delivered, and marks a cash-on-delivery payment as paid.
 - An order shows **OVERDUE** when it is `ACTIVE` and past its latest end date. This is calculated, not stored.
+- Returns are per order. An order that mixes rental durations is due on its latest end date, so the overdue badge and late fees start after that date.
+- **Late fees:** when an overdue order is marked returned, the app records a late fee of one day's rent (monthly price / 30) per unit for each day late. It appears on the customer dashboard and the invoice until the admin marks it paid. Fees are settled outside the app and are not charged through Razorpay.
 - The allowed moves live in one place (`RentalService`), so accept, cancel and return cannot skip a step.
 
 ## Technology
@@ -100,6 +102,8 @@ export ADMIN_PASSWORD='choose-a-strong-password'
 mvn spring-boot:run
 ```
 
+On Windows you can instead copy `furniture-rental-system/run-local.example.ps1` to `run-local.ps1` (which is git-ignored), fill in your values, and start the app with `.\run-local.ps1`. The script keeps the same `JWT_SECRET` between runs for you.
+
 Open <http://localhost:8085>. On first start the app seeds the categories and a sample furniture catalog. Reuse the same `JWT_SECRET` between runs, otherwise existing logins stop working.
 
 Registered users are always customers. The admin account comes only from the `ADMIN_*` variables.
@@ -145,7 +149,7 @@ furniture-rental-system/
 
 ## Roadmap
 
-- Late-return fees and damage penalties
+- Damage penalties recorded when an order is returned
 - Automatic Razorpay refunds for cancelled paid orders
 - GST-compliant invoices with per-item rates
 - Docker setup with MySQL
