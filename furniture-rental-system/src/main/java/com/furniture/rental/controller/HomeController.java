@@ -28,7 +28,7 @@ public class HomeController {
     @GetMapping("/furniture/{id}")
     public String viewFurniture(@PathVariable Long id, Model model) {
         Furniture furniture = furnitureService.getFurnitureById(id);
-        if (!furnitureService.isCustomerCatalogItem(furniture)) {
+        if (furniture == null) {
             return "redirect:/";
         }
         model.addAttribute("furniture", furniture);
@@ -45,7 +45,7 @@ public class HomeController {
     @GetMapping("/category/{id}")
     public String viewCategory(@PathVariable Long id, Model model) {
         model.addAttribute("category", categoryService.getCategoryById(id));
-        model.addAttribute("furnitureList", furnitureService.getCustomerCatalogByCategory(id));
+        model.addAttribute("furnitureList", furnitureService.getFurnitureByCategory(id));
         return "category-products";
     }
 }

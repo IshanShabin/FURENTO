@@ -38,7 +38,7 @@ public class ApiController {
 
     @GetMapping("/furniture")
     public List<FurnitureResponse> furniture() {
-        return furnitureService.getCustomerCatalog().stream()
+        return furnitureService.getAllFurniture().stream()
                 .map(FurnitureResponse::from)
                 .toList();
     }
@@ -46,7 +46,7 @@ public class ApiController {
     @GetMapping("/furniture/{id}")
     public ResponseEntity<FurnitureResponse> furnitureById(@PathVariable Long id) {
         Furniture furniture = furnitureService.getFurnitureById(id);
-        if (!furnitureService.isCustomerCatalogItem(furniture)) {
+        if (furniture == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(FurnitureResponse.from(furniture));

@@ -19,121 +19,125 @@
         th:text="${rentalError}"
       ></div>
 
-      <table style="width: 100%; border-collapse: collapse; margin-top: 20px">
-        <thead>
-          <tr
-            style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6"
-          >
-            <th style="padding: 12px; text-align: left">ID</th>
-            <th style="padding: 12px; text-align: left">User</th>
-            <th style="padding: 12px; text-align: left">Order Date</th>
-            <th style="padding: 12px; text-align: left">Total Amount</th>
-            <th style="padding: 12px; text-align: left">Status</th>
-            <th style="padding: 12px; text-align: left">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            th:each="rental : ${rentals}"
-            style="border-bottom: 1px solid #dee2e6"
-          >
-            <td style="padding: 12px" th:text="${rental.id}">1</td>
-            <td
-              style="padding: 12px"
-              th:text="${rental.user != null ? rental.user.username : 'Unknown'}"
+      <div class="table-responsive">
+        <table style="width: 100%; border-collapse: collapse; margin-top: 20px">
+          <thead>
+            <tr
+              style="
+                background-color: #f8f9fa;
+                border-bottom: 2px solid #dee2e6;
+              "
             >
-              User
-            </td>
-            <td
-              style="padding: 12px"
-              th:text="${#temporals.format(rental.orderDate, 'yyyy-MM-dd HH:mm')}"
+              <th style="padding: 12px; text-align: left">ID</th>
+              <th style="padding: 12px; text-align: left">User</th>
+              <th style="padding: 12px; text-align: left">Order Date</th>
+              <th style="padding: 12px; text-align: left">Total Amount</th>
+              <th style="padding: 12px; text-align: left">Status</th>
+              <th style="padding: 12px; text-align: left">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              th:each="rental : ${rentals}"
+              style="border-bottom: 1px solid #dee2e6"
             >
-              2024-01-01
-            </td>
-            <td
-              style="padding: 12px"
-              th:text="${'₹' + #numbers.formatDecimal(rental.totalAmount, 1, 'COMMA', 2, 'POINT')}"
-            >
-              ₹150.00
-            </td>
-            <td style="padding: 12px">
-              <span th:text="${rental.status}">ACTIVE</span>
-              <span th:if="${rental.overdue}" class="badge bg-danger ms-1"
-                >OVERDUE</span
+              <td style="padding: 12px" th:text="${rental.id}">1</td>
+              <td
+                style="padding: 12px"
+                th:text="${rental.user != null ? rental.user.username : 'Unknown'}"
               >
-              <div
-                th:if="${rental.status == 'ACTIVE' and rental.dueDate != null}"
-                class="small text-muted"
-                th:text="${'Due ' + #temporals.format(rental.dueDate, 'MMM dd, yyyy')}"
+                User
+              </td>
+              <td
+                style="padding: 12px"
+                th:text="${#temporals.format(rental.orderDate, 'yyyy-MM-dd HH:mm')}"
               >
-                Due Jan 01, 2026
-              </div>
-              <div th:each="penalty : ${rental.penalties}" class="small mt-1">
-                <span
-                  th:text="${'Late fee ₹' + #numbers.formatDecimal(penalty.amount, 1, 'COMMA', 2, 'POINT')}"
-                  >Late fee ₹100.00</span
+                2024-01-01
+              </td>
+              <td
+                style="padding: 12px"
+                th:text="${'₹' + #numbers.formatDecimal(rental.totalAmount, 1, 'COMMA', 2, 'POINT')}"
+              >
+                ₹150.00
+              </td>
+              <td style="padding: 12px">
+                <span th:text="${rental.status}">ACTIVE</span>
+                <span th:if="${rental.overdue}" class="badge bg-danger ms-1"
+                  >OVERDUE</span
                 >
-                <span th:if="${penalty.paid}" class="badge bg-success ms-1"
-                  >PAID</span
+                <div
+                  th:if="${rental.status == 'ACTIVE' and rental.dueDate != null}"
+                  class="small text-muted"
+                  th:text="${'Due ' + #temporals.format(rental.dueDate, 'MMM dd, yyyy')}"
                 >
-                <form
-                  th:unless="${penalty.paid}"
-                  th:action="@{'/admin/rentals/' + ${rental.id} + '/penalties/' + ${penalty.id} + '/paid'}"
-                  method="post"
-                  class="d-inline ms-1"
-                >
-                  <button
-                    type="submit"
-                    class="btn btn-sm btn-outline-success py-0"
+                  Due Jan 01, 2026
+                </div>
+                <div th:each="penalty : ${rental.penalties}" class="small mt-1">
+                  <span
+                    th:text="${'Late fee ₹' + #numbers.formatDecimal(penalty.amount, 1, 'COMMA', 2, 'POINT')}"
+                    >Late fee ₹100.00</span
                   >
-                    Mark paid
+                  <span th:if="${penalty.paid}" class="badge bg-success ms-1"
+                    >PAID</span
+                  >
+                  <form
+                    th:unless="${penalty.paid}"
+                    th:action="@{'/admin/rentals/' + ${rental.id} + '/penalties/' + ${penalty.id} + '/paid'}"
+                    method="post"
+                    class="d-inline ms-1"
+                  >
+                    <button
+                      type="submit"
+                      class="btn btn-sm btn-outline-success py-0"
+                    >
+                      Mark paid
+                    </button>
+                  </form>
+                </div>
+              </td>
+              <td style="padding: 12px">
+                <form
+                  th:if="${rental.status == 'PENDING'}"
+                  th:action="@{'/admin/rentals/accept/' + ${rental.id}}"
+                  method="post"
+                  class="d-inline"
+                >
+                  <button type="submit" class="btn btn-sm btn-success me-2">
+                    Accept
                   </button>
                 </form>
-              </div>
-            </td>
-            <td style="padding: 12px">
-              <form
-                th:if="${rental.status == 'PENDING'}"
-                th:action="@{'/admin/rentals/accept/' + ${rental.id}}"
-                method="post"
-                class="d-inline"
-              >
-                <button type="submit" class="btn btn-sm btn-success me-2">
-                  Accept
-                </button>
-              </form>
-              <form
-                th:if="${rental.status == 'PENDING'}"
-                th:action="@{'/admin/rentals/cancel/' + ${rental.id}}"
-                method="post"
-                class="d-inline"
-                onsubmit="return confirm('Cancel this rental and return its items to stock?');"
-              >
-                <button type="submit" class="btn btn-sm btn-danger">
-                  Cancel
-                </button>
-              </form>
-              <form
-                th:if="${rental.status == 'ACTIVE'}"
-                th:action="@{'/admin/rentals/return/' + ${rental.id}}"
-                method="post"
-                class="d-inline"
-                onsubmit="return confirm('Mark this rental as returned and put its items back in stock?');"
-              >
-                <button type="submit" class="btn btn-sm btn-primary">
-                  Mark returned
-                </button>
-              </form>
-              <span
-                th:if="${rental.status == 'CANCELLED' or rental.status == 'RETURNED'}"
-                class="text-muted"
-                >&mdash;</span
-              >
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
+                <form
+                  th:if="${rental.status == 'PENDING'}"
+                  th:action="@{'/admin/rentals/cancel/' + ${rental.id}}"
+                  method="post"
+                  class="d-inline"
+                  onsubmit="return confirm('Cancel this rental and return its items to stock?');"
+                >
+                  <button type="submit" class="btn btn-sm btn-danger">
+                    Cancel
+                  </button>
+                </form>
+                <form
+                  th:if="${rental.status == 'ACTIVE'}"
+                  th:action="@{'/admin/rentals/return/' + ${rental.id}}"
+                  method="post"
+                  class="d-inline"
+                  onsubmit="return confirm('Mark this rental as returned and put its items back in stock?');"
+                >
+                  <button type="submit" class="btn btn-sm btn-primary">
+                    Mark returned
+                  </button>
+                </form>
+                <span
+                  th:if="${rental.status == 'CANCELLED' or rental.status == 'RETURNED'}"
+                  class="text-muted"
+                  >&mdash;</span
+                >
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <div style="margin-top: 20px">
         <a href="/admin/dashboard" style="color: #007bff; text-decoration: none"
           >&larr; Back to Dashboard</a

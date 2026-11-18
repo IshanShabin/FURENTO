@@ -9,20 +9,6 @@
     <div th:replace="~{layout :: navbar}"></div>
 
     <div class="container my-5">
-      <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="/">Home</a></li>
-          <li class="breadcrumb-item"><a href="/#furniture">Furniture</a></li>
-          <li
-            class="breadcrumb-item active"
-            aria-current="page"
-            th:text="${furniture.name}"
-          >
-            Product Name
-          </li>
-        </ol>
-      </nav>
-
       <div class="row g-5 mt-2">
         <!-- Product Image -->
         <div class="col-md-6">

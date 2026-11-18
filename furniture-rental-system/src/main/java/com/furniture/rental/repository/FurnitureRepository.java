@@ -9,5 +9,4 @@ public interface FurnitureRepository extends JpaRepository<Furniture, Long> {
 
     boolean existsByNameIgnoreCase(String name);
 
-    List<Furniture> findByNameIgnoreCase(String name);
 }

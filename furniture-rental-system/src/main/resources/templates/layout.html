@@ -119,9 +119,9 @@
                     <p class="text-secondary">Rent Comfort. Live Better. We provide premium furniture rentals for your
                         home and office needs.</p>
                     <div class="d-flex gap-3">
-                        <a href="#" class="text-white"><i class="fab fa-facebook fa-lg"></i></a>
-                        <a href="#" class="text-white"><i class="fab fa-instagram fa-lg"></i></a>
-                        <a href="#" class="text-white"><i class="fab fa-twitter fa-lg"></i></a>
+                        <a th:if="${!#strings.isEmpty(business?.facebook)}" th:href="${business.facebook}" target="_blank" rel="noopener" class="text-white" aria-label="Facebook"><i class="fab fa-facebook fa-lg"></i></a>
+                        <a th:if="${!#strings.isEmpty(business?.instagram)}" th:href="${business.instagram}" target="_blank" rel="noopener" class="text-white" aria-label="Instagram"><i class="fab fa-instagram fa-lg"></i></a>
+                        <a th:if="${!#strings.isEmpty(business?.twitter)}" th:href="${business.twitter}" target="_blank" rel="noopener" class="text-white" aria-label="Twitter"><i class="fab fa-twitter fa-lg"></i></a>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6">
@@ -136,9 +136,9 @@
                 <div class="col-lg-4 col-md-6">
                     <h5 class="fw-bold mb-3">Contact</h5>
                     <ul class="list-unstyled text-secondary">
-                        <li><i class="fas fa-map-marker-alt me-2"></i> Chengottur Street, Kottakal</li>
-                        <li><i class="fas fa-phone me-2"></i> +91 98712 78815</li>
-                        <li><i class="fas fa-envelope me-2"></i> support@furento.com</li>
+                        <li th:if="${!#strings.isEmpty(business?.address)}"><i class="fas fa-map-marker-alt me-2"></i> <span th:text="${business.address}">Address</span></li>
+                        <li th:if="${!#strings.isEmpty(business?.phone)}"><i class="fas fa-phone me-2"></i> <span th:text="${business.phone}">Phone</span></li>
+                        <li th:if="${!#strings.isEmpty(business?.email)}"><i class="fas fa-envelope me-2"></i> <span th:text="${business.email}">Email</span></li>
                     </ul>
                 </div>
             </div>

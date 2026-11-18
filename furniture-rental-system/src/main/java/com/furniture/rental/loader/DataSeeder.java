@@ -5,9 +5,11 @@ import com.furniture.rental.entity.Furniture;
 import com.furniture.rental.entity.FurnitureImage;
 import com.furniture.rental.repository.CategoryRepository;
 import com.furniture.rental.repository.FurnitureRepository;
-import com.furniture.rental.repository.RentalItemRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.ClassPathResource;
@@ -21,6 +23,7 @@ import java.util.List;
 @Component
 public class DataSeeder implements CommandLineRunner {
 
+        private static final Logger log = LoggerFactory.getLogger(DataSeeder.class);
         private static final String HOME_OFFICE_DESCRIPTION = "Ergonomic desks and chairs for comfortable, focused work at home.";
         private static final String OFFICE_ROOM_DESCRIPTION = "Functional office furniture for meetings, shared workspaces, and everyday organization.";
         private static final String OFFICE_ROOM_IMAGE = "https://images.unsplash.com/photo-1758630737361-ca7532fb5e7f?auto=format&fit=crop&w=900&q=80";
@@ -30,9 +33,6 @@ public class DataSeeder implements CommandLineRunner {
 
         @Autowired
         private FurnitureRepository furnitureRepository;
-
-        @Autowired
-        private RentalItemRepository rentalItemRepository;
 
         @Autowired
         private ObjectMapper objectMapper;
@@ -55,7 +55,7 @@ public class DataSeeder implements CommandLineRunner {
                                         new Category("Office Room", OFFICE_ROOM_DESCRIPTION, OFFICE_ROOM_IMAGE));
 
                         categoryRepository.saveAll(categories);
-                        System.out.println("Default categories seeded successfully!");
+                        log.info("Default categories seeded.");
                 } else {
                         // Fix for broken Bedroom image on existing databases
                         List<Category> categories = categoryRepository.findAll();
@@ -63,7 +63,7 @@ public class DataSeeder implements CommandLineRunner {
                                 if ("Bedroom".equalsIgnoreCase(c.getName())) {
                                         c.setImageUrl("https://images.unsplash.com/photo-1617325247661-675ab4b64ae2?q=80&w=800&auto=format&fit=crop");
                                         categoryRepository.save(c);
-                                        System.out.println("Bedroom category image updated.");
+                                        log.info("Bedroom category image updated.");
                                 }
                         }
                 }
@@ -72,7 +72,6 @@ public class DataSeeder implements CommandLineRunner {
                 updateOfficeDescriptions();
                 updateOfficeRoomImage();
                 seedFurniture();
-                retireSofa();
         }
 
         private void ensureCatalogCategories() {
@@ -142,18 +141,9 @@ public class DataSeeder implements CommandLineRunner {
                 }
 
                 if (added > 0) {
-                        System.out.println("Seeded " + added + " furniture catalog items.");
+                        log.info("Seeded {} furniture catalog items.", added);
                 }
         }
 
-        private void retireSofa() {
-                for (Furniture furniture : furnitureRepository.findByNameIgnoreCase("Sofa")) {
-                        if (rentalItemRepository.existsByFurniture_Id(furniture.getId())) {
-                                furniture.setStockQuantity(0);
-                                furnitureRepository.save(furniture);
-                        } else {
-                                furnitureRepository.delete(furniture);
-                        }
-                }
-        }
+       
 }

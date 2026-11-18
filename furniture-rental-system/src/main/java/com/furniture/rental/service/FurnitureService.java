@@ -24,14 +24,8 @@ public class FurnitureService {
         return furnitureRepository.findByCategoryId(categoryId);
     }
 
-    public List<Furniture> getCustomerCatalog() {
-        return getAllFurniture().stream()
-                .filter(furniture -> !"Sofa".equalsIgnoreCase(furniture.getName()))
-                .toList();
-    }
-
     public List<Furniture> getTrendingFurniture() {
-        List<Furniture> newestAvailable = getCustomerCatalog().stream()
+        List<Furniture> newestAvailable = getAllFurniture().stream()
                 .filter(Furniture::isAvailable)
                 .sorted(Comparator.comparing(Furniture::getId).reversed())
                 .toList();
@@ -55,16 +49,6 @@ public class FurnitureService {
                 }
             }
         }
-    }
-
-    public List<Furniture> getCustomerCatalogByCategory(Long categoryId) {
-        return getFurnitureByCategory(categoryId).stream()
-                .filter(furniture -> !"Sofa".equalsIgnoreCase(furniture.getName()))
-                .toList();
-    }
-
-    public boolean isCustomerCatalogItem(Furniture furniture) {
-        return furniture != null && !"Sofa".equalsIgnoreCase(furniture.getName());
     }
 
     public Furniture getFurnitureById(Long id) {

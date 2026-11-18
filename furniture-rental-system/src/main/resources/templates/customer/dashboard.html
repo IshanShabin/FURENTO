@@ -51,91 +51,95 @@
 
       <div th:unless="${rentals.empty}">
         <h3>Your Rentals</h3>
-        <table style="width: 100%; border-collapse: collapse; margin-top: 20px">
-          <thead>
-            <tr
-              style="
-                background-color: #f8f9fa;
-                border-bottom: 2px solid #dee2e6;
-              "
-            >
-              <th style="padding: 12px; text-align: left">Order #</th>
-              <th style="padding: 12px; text-align: left">Date</th>
-              <th style="padding: 12px; text-align: left">Total Amount</th>
-              <th style="padding: 12px; text-align: left">Status</th>
-              <th style="padding: 12px; text-align: left">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              th:each="rental : ${rentals}"
-              style="border-bottom: 1px solid #dee2e6"
-            >
-              <td style="padding: 12px" th:text="${rental.id}">101</td>
-              <td
-                style="padding: 12px"
-                th:text="${#temporals.format(rental.orderDate, 'MMM dd, yyyy')}"
+        <div class="table-responsive">
+          <table
+            style="width: 100%; border-collapse: collapse; margin-top: 20px"
+          >
+            <thead>
+              <tr
+                style="
+                  background-color: #f8f9fa;
+                  border-bottom: 2px solid #dee2e6;
+                "
               >
-                Jan 01, 2024
-              </td>
-              <td
-                style="padding: 12px"
-                th:text="${'₹' + #numbers.formatDecimal(rental.totalAmount, 1, 'COMMA', 2, 'POINT')}"
+                <th style="padding: 12px; text-align: left">Order #</th>
+                <th style="padding: 12px; text-align: left">Date</th>
+                <th style="padding: 12px; text-align: left">Total Amount</th>
+                <th style="padding: 12px; text-align: left">Status</th>
+                <th style="padding: 12px; text-align: left">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                th:each="rental : ${rentals}"
+                style="border-bottom: 1px solid #dee2e6"
               >
-                ₹150.00
-              </td>
-              <td style="padding: 12px">
-                <span
-                  th:class="${'status-badge status-' + rental.status}"
-                  th:text="${rental.status}"
-                  style="
-                    padding: 4px 8px;
-                    border-radius: 4px;
-                    font-size: 0.9em;
-                    font-weight: bold;
-                  "
+                <td style="padding: 12px" th:text="${rental.id}">101</td>
+                <td
+                  style="padding: 12px"
+                  th:text="${#temporals.format(rental.orderDate, 'MMM dd, yyyy')}"
                 >
-                  ACTIVE
-                </span>
-                <span th:if="${rental.overdue}" class="badge bg-danger ms-1"
-                  >OVERDUE</span
+                  Jan 01, 2024
+                </td>
+                <td
+                  style="padding: 12px"
+                  th:text="${'₹' + #numbers.formatDecimal(rental.totalAmount, 1, 'COMMA', 2, 'POINT')}"
                 >
-                <div
-                  th:if="${rental.status == 'ACTIVE' and rental.dueDate != null}"
-                  class="small text-muted mt-1"
-                  th:text="${'Due ' + #temporals.format(rental.dueDate, 'MMM dd, yyyy')}"
-                >
-                  Due Jan 01, 2026
-                </div>
-                <div
-                  th:if="${rental.penaltyDue}"
-                  class="small text-danger mt-1"
-                  th:text="${'Late fee due: ₹' + #numbers.formatDecimal(rental.unpaidPenaltyTotal, 1, 'COMMA', 2, 'POINT')}"
-                >
-                  Late fee due: ₹100.00
-                </div>
-              </td>
-              <td style="padding: 12px">
-                <a
-                  th:href="@{'/customer/rental/' + ${rental.id} + '/invoice'}"
-                  style="color: #007bff; text-decoration: none"
-                  >View Details</a
-                >
-                <form
-                  th:if="${rental.status == 'PENDING'}"
-                  th:action="@{'/customer/rental/' + ${rental.id} + '/cancel'}"
-                  method="post"
-                  class="d-inline ms-3"
-                  onsubmit="return confirm('Cancel this rental?');"
-                >
-                  <button type="submit" class="btn btn-link text-danger p-0">
-                    Cancel
-                  </button>
-                </form>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                  ₹150.00
+                </td>
+                <td style="padding: 12px">
+                  <span
+                    th:class="${'status-badge status-' + rental.status}"
+                    th:text="${rental.status}"
+                    style="
+                      padding: 4px 8px;
+                      border-radius: 4px;
+                      font-size: 0.9em;
+                      font-weight: bold;
+                    "
+                  >
+                    ACTIVE
+                  </span>
+                  <span th:if="${rental.overdue}" class="badge bg-danger ms-1"
+                    >OVERDUE</span
+                  >
+                  <div
+                    th:if="${rental.status == 'ACTIVE' and rental.dueDate != null}"
+                    class="small text-muted mt-1"
+                    th:text="${'Due ' + #temporals.format(rental.dueDate, 'MMM dd, yyyy')}"
+                  >
+                    Due Jan 01, 2026
+                  </div>
+                  <div
+                    th:if="${rental.penaltyDue}"
+                    class="small text-danger mt-1"
+                    th:text="${'Late fee due: ₹' + #numbers.formatDecimal(rental.unpaidPenaltyTotal, 1, 'COMMA', 2, 'POINT')}"
+                  >
+                    Late fee due: ₹100.00
+                  </div>
+                </td>
+                <td style="padding: 12px">
+                  <a
+                    th:href="@{'/customer/rental/' + ${rental.id} + '/invoice'}"
+                    style="color: #007bff; text-decoration: none"
+                    >View Details</a
+                  >
+                  <form
+                    th:if="${rental.status == 'PENDING'}"
+                    th:action="@{'/customer/rental/' + ${rental.id} + '/cancel'}"
+                    method="post"
+                    class="d-inline ms-3"
+                    onsubmit="return confirm('Cancel this rental?');"
+                  >
+                    <button type="submit" class="btn btn-link text-danger p-0">
+                      Cancel
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
