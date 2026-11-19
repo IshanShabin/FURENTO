@@ -130,7 +130,7 @@
                 >
                 <a
                   class="btn btn-outline-dark btn-sm"
-                  th:href="@{'mailto:support@furento.com?subject=Purchase enquiry: ' + ${furniture.name}}"
+                  th:href="@{'mailto:' + ${business?.email} + '?subject=Purchase enquiry: ' + ${furniture.name}}"
                   >Contact Sales</a
                 >
               </div>
