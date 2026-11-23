@@ -1,6 +1,12 @@
 package com.furniture.rental.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -12,17 +18,26 @@ public class Furniture {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Name is required.")
+    @Size(max = 255, message = "Name must be 255 characters or fewer.")
     @Column(nullable = false)
     private String name;
 
+    @Size(max = 1000, message = "Description must be 1000 characters or fewer.")
     @Column(length = 1000)
     private String description;
 
+    @NotNull(message = "Rental price is required.")
+    @DecimalMin(value = "0.01", message = "Rental price must be greater than zero.")
+    @Digits(integer = 8, fraction = 2, message = "Rental price can have at most 2 decimal places.")
     @Column(nullable = false)
     private BigDecimal rentalPricePerMonth;
 
+    @DecimalMin(value = "0.00", message = "Buy price cannot be negative.")
+    @Digits(integer = 8, fraction = 2, message = "Buy price can have at most 2 decimal places.")
     private BigDecimal purchasePrice;
 
+    @Min(value = 0, message = "Stock cannot be negative.")
     private int stockQuantity;
 
     private boolean available; // true if stock > 0

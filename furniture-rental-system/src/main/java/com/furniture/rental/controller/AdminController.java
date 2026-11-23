@@ -8,9 +8,13 @@ import com.furniture.rental.service.CategoryService;
 import com.furniture.rental.service.FurnitureImageStorageService;
 import com.furniture.rental.service.FurnitureService;
 import com.furniture.rental.service.RentalService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -87,7 +91,17 @@ public class AdminController {
     }
 
     @PostMapping("/categories/save")
-    public String saveCategory(@ModelAttribute Category category) {
+    public String saveCategory(@Valid @ModelAttribute("category") Category category,
+            BindingResult bindingResult) {
+        if (!bindingResult.hasFieldErrors("name")
+                && categoryService.isNameTaken(category.getName(), category.getId())) {
+            bindingResult.rejectValue("name", "duplicate", "A category with this name already exists.");
+        }
+        if (bindingResult.hasErrors()) {
+            return "admin/category-form";
+        }
+
+        category.setName(category.getName().trim());
         if (category.getId() != null) {
             Category existing = categoryService.getCategoryById(category.getId());
             if (existing != null) {
@@ -100,6 +114,20 @@ public class AdminController {
             categoryService.saveCategory(category);
         }
         return "redirect:/admin/categories";
+    }
+
+    private String furnitureFormWithErrors(Furniture form, Category selected, Model model) {
+        if (form.getId() != null) {
+            Furniture existing = furnitureService.getFurnitureById(form.getId());
+            if (existing != null) {
+                form.setImages(existing.getImages()); // only so the page can show current images
+            }
+        }
+        if (selected != null) {
+            form.setCategory(selected);
+        }
+        model.addAttribute("categories", categoryService.getAllCategories());
+        return "admin/furniture-form";
     }
 
     // Furniture Management
@@ -128,10 +156,21 @@ public class AdminController {
     }
 
     @PostMapping("/furniture/save")
-    public String saveFurniture(@ModelAttribute Furniture form,
-            @RequestParam("categoryId") Long categoryId,
+    public String saveFurniture(@Valid @ModelAttribute("furniture") Furniture form,
+            BindingResult bindingResult,
+            @RequestParam(value = "categoryId", required = false) Long categoryId,
             @RequestParam(value = "imageFiles", required = false) List<MultipartFile> uploads,
+            Model model,
             RedirectAttributes redirectAttributes) {
+        Category category = categoryId == null ? null : categoryService.getCategoryById(categoryId);
+        if (category == null) {
+            bindingResult.reject("category.invalid", "Choose a valid furniture category.");
+        }
+        if (bindingResult.hasErrors()) {
+            return furnitureFormWithErrors(form, category, model);
+        }
+
+        form.setName(form.getName().trim());
         Furniture furniture = form;
         if (form.getId() != null) {
             furniture = furnitureService.getFurnitureById(form.getId());
@@ -143,12 +182,6 @@ public class AdminController {
             furniture.setRentalPricePerMonth(form.getRentalPricePerMonth());
             furniture.setPurchasePrice(form.getPurchasePrice());
             furniture.setStockQuantity(form.getStockQuantity());
-        }
-
-        Category category = categoryService.getCategoryById(categoryId);
-        if (category == null) {
-            redirectAttributes.addFlashAttribute("imageError", "Choose a valid furniture category.");
-            return "redirect:/admin/furniture";
         }
         furniture.setCategory(category);
         furniture = furnitureService.saveFurniture(furniture);

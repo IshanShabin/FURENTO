@@ -56,7 +56,7 @@ FURENTO is a full-stack furniture rental platform built as a portfolio project. 
 
 ### 1. Create the database
 
-The app expects a database named `springdb` and connects as `root` (see `application.properties`). Tables are created automatically on first start.
+The app expects a database named `springdb` (override with `DB_URL`) and connects as `root` (override with `DB_USERNAME`). Tables are created automatically on first start.
 
 ```sql
 CREATE DATABASE springdb;
@@ -66,17 +66,22 @@ CREATE DATABASE springdb;
 
 Secrets are read from the environment and are never committed.
 
-| Variable              | Required | Purpose                                                                                   |
-| --------------------- | -------- | ----------------------------------------------------------------------------------------- |
-| `DB_PASSWORD`         | yes      | MySQL password for the `root` user                                                        |
-| `JWT_SECRET`          | yes      | Signing key for login tokens. At least 32 characters. The app refuses to start without it |
-| `ADMIN_USERNAME`      | no       | Username for the admin account created on startup                                         |
-| `ADMIN_PASSWORD`      | no       | Admin password, at least 8 characters. With no admin variables, no admin is created       |
-| `ADMIN_EMAIL`         | no       | Admin email (default `admin@furento.com`)                                                 |
-| `RAZORPAY_KEY_ID`     | no       | Razorpay key id. Without Razorpay keys only cash on delivery is offered                   |
-| `RAZORPAY_KEY_SECRET` | no       | Razorpay key secret                                                                       |
-| `JWT_COOKIE_SECURE`   | no       | Set to `true` when serving over HTTPS (default `false`)                                   |
-| `FURENTO_UPLOAD_DIR`  | no       | Folder for uploaded product images (default `uploads/furniture`)                          |
+| Variable                 | Required | Purpose                                                                                   |
+| ------------------------ | -------- | ----------------------------------------------------------------------------------------- |
+| `DB_PASSWORD`            | yes      | Database password                                                                         |
+| `JWT_SECRET`             | yes      | Signing key for login tokens. At least 32 characters. The app refuses to start without it |
+| `DB_URL`                 | no       | JDBC URL (default `jdbc:mysql://localhost:3306/springdb`)                                 |
+| `DB_USERNAME`            | no       | Database user (default `root`)                                                            |
+| `PORT`                   | no       | HTTP port (default `8085`)                                                                |
+| `SPRING_PROFILES_ACTIVE` | no       | `dev` (default) or `prod`, see below                                                      |
+| `ADMIN_USERNAME`         | no       | Username for the admin account created on startup                                         |
+| `ADMIN_PASSWORD`         | no       | Admin password, at least 8 characters. With no admin variables, no admin is created       |
+| `ADMIN_EMAIL`            | no       | Admin email (default `admin@furento.com`)                                                 |
+| `RAZORPAY_KEY_ID`        | no       | Razorpay key id. Without Razorpay keys only cash on delivery is offered                   |
+| `RAZORPAY_KEY_SECRET`    | no       | Razorpay key secret                                                                       |
+| `JWT_COOKIE_SECURE`      | no       | Mark the login cookie `Secure`. Default `false` in dev and `true` in prod                 |
+| `DDL_AUTO`               | no       | Prod only: Hibernate schema mode (default `update`)                                       |
+| `FURENTO_UPLOAD_DIR`     | no       | Folder for uploaded product images (default `uploads/furniture`)                          |
 
 ### 3. Run
 
@@ -107,6 +112,12 @@ On Windows you can instead copy `furniture-rental-system/run-local.example.ps1` 
 Open <http://localhost:8085>. On first start the app seeds the categories and a sample furniture catalog. Reuse the same `JWT_SECRET` between runs, otherwise existing logins stop working.
 
 Registered users are always customers. The admin account comes only from the `ADMIN_*` variables.
+
+## Profiles and health check
+
+- **`dev`** (default): SQL logging on, template cache off, verbose app logs.
+- **`prod`** (`SPRING_PROFILES_ACTIVE=prod`): no SQL logging, template cache on, login cookie marked `Secure`, proxy headers honoured, and error pages that never show internals. Over plain http, set `JWT_COOKIE_SECURE=false` or login will not stick.
+- `GET /actuator/health` reports whether the app and its database are up. It needs no login and is meant for Docker and hosting health checks.
 
 ## Razorpay test mode
 

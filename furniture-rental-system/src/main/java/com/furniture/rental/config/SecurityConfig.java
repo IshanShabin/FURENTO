@@ -61,11 +61,11 @@ public class SecurityConfig {
                         .requestMatchers("/", "/home", "/register", "/login", "/css/**", "/js/**", "/images/**",
                                 "/uploads/**", "/api/auth/**", "/about", "/category/**")
                         .permitAll()
+                        .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/furniture/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/furniture/*/reviews", "/reviews/**").hasRole("CUSTOMER")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/admin/**").hasRole("ADMIN") // Same as above
                         .requestMatchers("/customer/**", "/rent/**", "/cart", "/cart/**", "/reviews/**")
                         .hasRole("CUSTOMER")
                         .anyRequest().authenticated())

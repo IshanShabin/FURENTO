@@ -22,6 +22,19 @@ public class CategoryService {
         return categoryRepository.findById(id).orElse(null);
     }
 
+    /**
+     * True if another category already uses this name (ignoring case).
+     * Pass the id of the category being edited so it does not clash with itself.
+     */
+    public boolean isNameTaken(String name, Long excludeId) {
+        if (name == null) {
+            return false;
+        }
+        return categoryRepository.findByNameIgnoreCase(name.trim())
+                .map(existing -> !existing.getId().equals(excludeId))
+                .orElse(false);
+    }
+
     public void saveCategory(Category category) {
         categoryRepository.save(category);
     }

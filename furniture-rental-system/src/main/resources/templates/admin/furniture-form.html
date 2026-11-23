@@ -29,6 +29,17 @@
             enctype="multipart/form-data"
           >
             <input type="hidden" th:field="*{id}" />
+            <div
+              class="alert alert-danger"
+              role="alert"
+              th:if="${#fields.hasErrors('*')}"
+            >
+              <ul class="mb-0">
+                <li th:each="err : ${#fields.allErrors()}" th:text="${err}">
+                  Error
+                </li>
+              </ul>
+            </div>
             <div class="row g-3">
               <div class="col-md-6">
                 <div class="form-floating mb-3">
@@ -37,6 +48,8 @@
                     class="form-control"
                     id="name"
                     th:field="*{name}"
+                    th:errorclass="is-invalid"
+                    maxlength="255"
                     placeholder="Furniture Name"
                     required
                   />
@@ -71,6 +84,8 @@
                 class="form-control"
                 id="description"
                 th:field="*{description}"
+                th:errorclass="is-invalid"
+                maxlength="1000"
                 placeholder="Description"
                 style="height: 100px"
               ></textarea>
@@ -86,6 +101,8 @@
                     class="form-control"
                     id="rentalPricePerMonth"
                     th:field="*{rentalPricePerMonth}"
+                    th:errorclass="is-invalid"
+                    min="0.01"
                     placeholder="0.00"
                     required
                   />
@@ -100,6 +117,8 @@
                     class="form-control"
                     id="purchasePrice"
                     th:field="*{purchasePrice}"
+                    th:errorclass="is-invalid"
+                    min="0"
                     placeholder="0.00"
                   />
                   <label for="purchasePrice">Buy Price (INR) (Optional)</label>
@@ -112,6 +131,8 @@
                     class="form-control"
                     id="stockQuantity"
                     th:field="*{stockQuantity}"
+                    th:errorclass="is-invalid"
+                    min="0"
                     placeholder="0"
                     required
                   />
