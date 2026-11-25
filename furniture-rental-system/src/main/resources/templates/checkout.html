@@ -15,6 +15,17 @@
             method="post"
             id="checkoutForm"
           >
+            <div
+              class="alert alert-danger"
+              role="alert"
+              th:if="${addressErrors != null and !addressErrors.isEmpty()}"
+            >
+              <ul class="mb-0">
+                <li th:each="message : ${addressErrors}" th:text="${message}">
+                  Error
+                </li>
+              </ul>
+            </div>
             <div class="card mb-4">
               <div class="card-header bg-white fw-bold">
                 <i class="fas fa-map-marker-alt text-primary me-2"></i>Delivery
@@ -31,6 +42,8 @@
                       class="form-control"
                       id="addressLine1"
                       name="addressLine1"
+                      th:value="${address?.addressLine1}"
+                      maxlength="200"
                       required
                     />
                   </div>
@@ -43,6 +56,8 @@
                       class="form-control"
                       id="addressLine2"
                       name="addressLine2"
+                      th:value="${address?.addressLine2}"
+                      maxlength="200"
                     />
                   </div>
                   <div class="col-md-6">
@@ -52,6 +67,8 @@
                       class="form-control"
                       id="city"
                       name="city"
+                      th:value="${address?.city}"
+                      maxlength="100"
                       required
                     />
                   </div>
@@ -64,20 +81,35 @@
                       required
                     >
                       <option value="">Choose...</option>
-                      <option>Delhi</option>
-                      <option>Maharashtra</option>
-                      <option>Karnataka</option>
-                      <option>Tamil Nadu</option>
-                      <option>Kerala</option>
+                      <option th:selected="${address?.state == 'Delhi'}">
+                        Delhi
+                      </option>
+                      <option th:selected="${address?.state == 'Maharashtra'}">
+                        Maharashtra
+                      </option>
+                      <option th:selected="${address?.state == 'Karnataka'}">
+                        Karnataka
+                      </option>
+                      <option th:selected="${address?.state == 'Tamil Nadu'}">
+                        Tamil Nadu
+                      </option>
+                      <option th:selected="${address?.state == 'Kerala'}">
+                        Kerala
+                      </option>
                     </select>
                   </div>
                   <div class="col-md-2">
-                    <label for="zipCode" class="form-label">Zip</label>
+                    <label for="zipCode" class="form-label">PIN</label>
                     <input
                       type="text"
                       class="form-control"
                       id="zipCode"
                       name="zipCode"
+                      th:value="${address?.zipCode}"
+                      maxlength="6"
+                      inputmode="numeric"
+                      pattern="[1-9][0-9]{5}"
+                      title="6-digit PIN code"
                       required
                     />
                   </div>

@@ -33,6 +33,7 @@ import static com.furniture.rental.controller.CartTestSupport.chair;
 import static com.furniture.rental.controller.CartTestSupport.customer;
 import static com.furniture.rental.controller.CartTestSupport.sessionWith;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -54,7 +55,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * Cash on delivery and Razorpay checkout.
- * The test cart holds 1 chair for 3 months at 349.00: subtotal 1047.00, tax 52.35, total 1099.35,
+ * The test cart holds 1 chair for 3 months at 349.00: subtotal 1047.00, tax
+ * 52.35, total 1099.35,
  * which is 109935 paise.
  */
 @WebMvcTest(controllers = CartController.class)
@@ -205,7 +207,8 @@ class CheckoutFlowTest {
     void theAmountComesFromDatabasePricesNotTheCart() throws Exception {
         razorpayIsConfigured();
         when(razorpayService.createOrder(TOTAL_PAISE)).thenReturn(new GatewayOrder("order_1", TOTAL_PAISE, "INR"));
-        // The cart still shows an old price of 100.00, but the database price is 349.00.
+        // The cart still shows an old price of 100.00, but the database price is
+        // 349.00.
         MockHttpSession session = sessionWith(cartWithChair("100.00", 1, 3));
 
         createPaymentOrder(session)
@@ -240,7 +243,10 @@ class CheckoutFlowTest {
 
     // ---------------- confirming an online payment ----------------
 
-    /** Starts a payment the normal way, so the session holds a genuine pending checkout. */
+    /**
+     * Starts a payment the normal way, so the session holds a genuine pending
+     * checkout.
+     */
     private MockHttpSession startedPayment() throws Exception {
         razorpayIsConfigured();
         when(razorpayService.createOrder(TOTAL_PAISE)).thenReturn(new GatewayOrder("order_1", TOTAL_PAISE, "INR"));
@@ -452,5 +458,86 @@ class CheckoutFlowTest {
                 .andExpect(jsonPath("$.message").value(startsWith("Unable to verify payment")));
 
         verify(rentalService, never()).createRental(any());
+    }
+
+    // ---------------- delivery address checks ----------------
+
+    private ResultActions placeCodOrderWithAddress(MockHttpSession session, String line1, String city,
+            String state, String zip) throws Exception {
+        return mockMvc.perform(post("/cart/process-checkout").with(customer()).with(csrf()).session(session)
+                .param("addressLine1", line1)
+                .param("addressLine2", "")
+                .param("city", city)
+                .param("state", state)
+                .param("zipCode", zip)
+                .param("paymentMethod", "COD"));
+    }
+
+    @Test
+    void codCheckoutWithMissingAddressPartsGoesBackToCheckoutWithMessages() throws Exception {
+        MockHttpSession session = sessionWith(cartWithChair("349.00", 1, 3));
+
+        placeCodOrderWithAddress(session, "   ", "   ", "", "676503")
+                .andExpect(redirectedUrl("/cart/checkout"))
+                .andExpect(flash().attribute("addressErrors", hasItem("Address line 1 is required.")))
+                .andExpect(flash().attribute("addressErrors", hasItem("City is required.")))
+                .andExpect(flash().attribute("addressErrors", hasItem("State is required.")));
+
+        verify(rentalService, never()).createRental(any());
+        assertNotNull(session.getAttribute("cart"));
+    }
+
+    @Test
+    void codCheckoutRejectsPinCodesThatAreNotSixDigits() throws Exception {
+        for (String pin : new String[] { "12345", "012345", "67650A", "6765031", "" }) {
+            MockHttpSession session = sessionWith(cartWithChair("349.00", 1, 3));
+
+            placeCodOrderWithAddress(session, "1 Main Road", "Malappuram", "Kerala", pin)
+                    .andExpect(redirectedUrl("/cart/checkout"));
+        }
+
+        verify(rentalService, never()).createRental(any());
+    }
+
+    @Test
+    void theAddressIsTrimmedBeforeItIsSaved() throws Exception {
+        MockHttpSession session = sessionWith(cartWithChair("349.00", 1, 3));
+
+        placeCodOrderWithAddress(session, "  1 Main Road  ", " Malappuram ", "Kerala", " 676503 ")
+                .andExpect(redirectedUrl("/customer/dashboard"));
+
+        ArgumentCaptor<Rental> captor = ArgumentCaptor.forClass(Rental.class);
+        verify(rentalService).createRental(captor.capture());
+        assertEquals("1 Main Road", captor.getValue().getDelivery().getAddressLine1());
+        assertEquals("Malappuram", captor.getValue().getDelivery().getCity());
+        assertEquals("676503", captor.getValue().getDelivery().getZipCode());
+    }
+
+    @Test
+    void startingPaymentWithAnIncompleteAddressIsRefused() throws Exception {
+        razorpayIsConfigured();
+
+        mockMvc.perform(post("/cart/create-payment-order").with(customer()).with(csrf())
+                .session(sessionWith(cartWithChair("349.00", 1, 3)))
+                .param("addressLine1", "1 Main Road")
+                .param("state", "Kerala")
+                .param("zipCode", "676503"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("City is required."));
+
+        verify(razorpayService, never()).createOrder(anyLong());
+    }
+
+    @Test
+    void startingPaymentWhenTheStockRanOutSaysSo() throws Exception {
+        razorpayIsConfigured();
+        when(furnitureService.getFurnitureById(CHAIR_ID)).thenReturn(chair("349.00", 0));
+
+        createPaymentOrder(sessionWith(cartWithChair("349.00", 1, 3)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message")
+                        .value("Requested quantity exceeds available stock for Wicker Chair"));
+
+        verify(razorpayService, never()).createOrder(anyLong());
     }
 }

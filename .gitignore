@@ -37,3 +37,5 @@ furniture-rental-system.zip_expanded/
 # Local run script with real secrets and the generated JWT key
 run-local.ps1
 .jwt-secret.local
+
+!.env.example

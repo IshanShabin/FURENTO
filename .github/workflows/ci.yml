@@ -31,3 +31,13 @@ jobs:
         with:
           name: surefire-reports
           path: furniture-rental-system/target/surefire-reports
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Build the Docker image
+        run: docker build -t furento:ci ./furniture-rental-system

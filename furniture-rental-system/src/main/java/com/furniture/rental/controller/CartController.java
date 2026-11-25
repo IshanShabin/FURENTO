@@ -2,6 +2,7 @@ package com.furniture.rental.controller;
 
 import com.furniture.rental.dto.Cart;
 import com.furniture.rental.dto.CartItem;
+import com.furniture.rental.dto.DeliveryAddress;
 import com.furniture.rental.entity.Delivery;
 import com.furniture.rental.entity.Furniture;
 import com.furniture.rental.entity.Payment;
@@ -15,18 +16,20 @@ import com.furniture.rental.service.UserService;
 import com.furniture.rental.util.Pricing;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
-//import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -157,11 +160,8 @@ public class CartController {
     }
 
     @PostMapping("/process-checkout")
-    public String processCheckout(@RequestParam String addressLine1,
-            @RequestParam String addressLine2,
-            @RequestParam String city,
-            @RequestParam String state,
-            @RequestParam String zipCode,
+    public String processCheckout(@Valid DeliveryAddress address,
+            BindingResult bindingResult,
             @RequestParam String paymentMethod,
             HttpSession session,
             Authentication auth,
@@ -174,6 +174,12 @@ public class CartController {
         Cart cart = (Cart) session.getAttribute("cart");
         if (cart == null || cart.getItems().isEmpty()) {
             return "redirect:/cart";
+        }
+
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute("addressErrors", errorMessages(bindingResult));
+            redirectAttributes.addFlashAttribute("address", address);
+            return "redirect:/cart/checkout";
         }
 
         List<CartItem> validatedItems;
@@ -189,7 +195,8 @@ public class CartController {
         payment.setPaymentMethod("COD");
         payment.setPaymentDate(LocalDateTime.now());
         payment.setStatus("PENDING");
-        createRental(user, validatedItems, addressLine1, addressLine2, city, state, zipCode, payment);
+        createRental(user, validatedItems, address.getAddressLine1(), address.getAddressLine2(), address.getCity(),
+                address.getState(), address.getZipCode(), payment);
 
         session.removeAttribute("cart");
         return "redirect:/customer/dashboard";
@@ -198,11 +205,8 @@ public class CartController {
     @PostMapping("/create-payment-order")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> createPaymentOrder(
-            @RequestParam String addressLine1,
-            @RequestParam(required = false, defaultValue = "") String addressLine2,
-            @RequestParam String city,
-            @RequestParam String state,
-            @RequestParam String zipCode,
+            @Valid DeliveryAddress address,
+            BindingResult bindingResult,
             HttpSession session,
             Authentication auth) {
         Cart cart = (Cart) session.getAttribute("cart");
@@ -213,8 +217,19 @@ public class CartController {
             return paymentError(HttpStatus.SERVICE_UNAVAILABLE, "Online payments are not configured.");
         }
 
+        if (bindingResult.hasErrors()) {
+            return paymentError(HttpStatus.BAD_REQUEST, String.join(" ", errorMessages(bindingResult)));
+        }
+
+        List<CartItem> orderItems;
         try {
-            List<CartItem> orderItems = getPricedOrderItems(cart);
+            orderItems = getPricedOrderItems(cart);
+        } catch (IllegalArgumentException exception) {
+            // For example: an item sold out since it was added to the cart.
+            return paymentError(HttpStatus.CONFLICT, exception.getMessage());
+        }
+
+        try {
             BigDecimal amount = calculateGrandTotal(orderItems);
             long amountPaise = RazorpayService.toPaise(amount);
             RazorpayService.GatewayOrder order = razorpayService.createOrder(amountPaise);
@@ -223,7 +238,8 @@ public class CartController {
             }
 
             session.setAttribute("pendingCheckout", new PendingCheckout(order.id(), auth.getName(), amountPaise,
-                    addressLine1, addressLine2, city, state, zipCode, orderItems));
+                    address.getAddressLine1(), address.getAddressLine2(), address.getCity(),
+                    address.getState(), address.getZipCode(), orderItems));
             return ResponseEntity.ok(Map.of(
                     "keyId", razorpayService.getKeyId(),
                     "orderId", order.id(),
@@ -368,6 +384,14 @@ public class CartController {
             rental.getItems().add(rentalItem);
         }
         return rentalService.createRental(rental);
+    }
+
+    private List<String> errorMessages(BindingResult bindingResult) {
+        return bindingResult.getAllErrors().stream()
+                .map(ObjectError::getDefaultMessage)
+                .distinct()
+                .sorted()
+                .toList();
     }
 
     private ResponseEntity<Map<String, Object>> paymentError(HttpStatus status, String message) {

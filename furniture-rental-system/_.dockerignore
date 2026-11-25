@@ -1,0 +1,15 @@
+# Build output and local files stay out of the image
+target/
+uploads/
+.git/
+.gitignore
+.vscode/
+.idea/
+*.md
+
+# Secrets and local helpers
+.env
+.env.*
+run-local.ps1
+run-local.example.ps1
+.jwt-secret.local

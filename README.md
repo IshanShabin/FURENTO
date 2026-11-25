@@ -113,6 +113,29 @@ Open <http://localhost:8085>. On first start the app seeds the categories and a 
 
 Registered users are always customers. The admin account comes only from the `ADMIN_*` variables.
 
+## Run with Docker
+
+This starts the app and a MySQL database together, with no Java or MySQL installed on your machine.
+
+1. Install Docker Desktop.
+2. Copy `.env.example` to `.env` and fill in the values (at least `DB_PASSWORD` and `JWT_SECRET`).
+3. From the repo root, run:
+   ```bash
+   docker compose up --build
+   ```
+4. Open <http://localhost:8085>. The first start creates the tables and the sample catalog.
+
+Useful commands:
+
+| Command                      | What it does                                          |
+| ---------------------------- | ----------------------------------------------------- |
+| `docker compose logs -f app` | Follow the app logs                                   |
+| `docker compose ps`          | Show whether both containers are healthy              |
+| `docker compose down`        | Stop everything and keep the data                     |
+| `docker compose down -v`     | Stop and also delete the database and uploaded images |
+
+The compose file runs the `prod` profile with `JWT_COOKIE_SECURE=false` so login works over plain http. Set it to `true` in `.env` when you serve the site over HTTPS. Stop any copy of the app already running on port 8085 first.
+
 ## Profiles and health check
 
 - **`dev`** (default): SQL logging on, template cache off, verbose app logs.
@@ -163,7 +186,6 @@ furniture-rental-system/
 - Damage penalties recorded when an order is returned
 - Automatic Razorpay refunds for cancelled paid orders
 - GST-compliant invoices with per-item rates
-- Docker setup with MySQL
 
 ## License
 
