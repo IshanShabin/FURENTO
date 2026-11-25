@@ -25,6 +25,23 @@ jobs:
       - name: Build and run the tests
         run: mvn -B -ntp clean verify
 
+      - name: Coverage summary
+        if: always()
+        run: |
+          csv=target/site/jacoco/jacoco.csv
+          if [ -f "$csv" ]; then
+            awk -F, 'NR>1 {lm+=$8; lc+=$9; im+=$4; ic+=$5} END {
+              printf "### Test coverage\n\nLines: %.1f%% (%d of %d)\n\nInstructions: %.1f%%\n", 100*lc/(lm+lc), lc, lm+lc, 100*ic/(im+ic)
+            }' "$csv" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: furniture-rental-system/target/site/jacoco
+
       - name: Upload test reports on failure
         if: failure()
         uses: actions/upload-artifact@v4
