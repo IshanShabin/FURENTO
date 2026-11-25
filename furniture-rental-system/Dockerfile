@@ -1,5 +1,5 @@
 # ---- Build stage: compile the app and package the jar ----
-FROM maven:3.9-eclipse-temurin-17 AS build
+FROM maven:3.9-eclipse-temurin-26 AS build
 WORKDIR /build
 
 # Download dependencies first. This layer is reused until pom.xml changes.
