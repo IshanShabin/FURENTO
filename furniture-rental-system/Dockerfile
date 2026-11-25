@@ -10,7 +10,7 @@ COPY src ./src
 RUN mvn -B -ntp -DskipTests package
 
 # ---- Run stage: a small Java runtime with only the jar ----
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:25-jre-alpine
 RUN addgroup -S app && adduser -S app -G app \
     && mkdir -p /data/uploads \
     && chown -R app:app /data
