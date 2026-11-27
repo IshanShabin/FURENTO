@@ -1,6 +1,7 @@
 package com.furniture.rental.controller;
 
 import com.furniture.rental.entity.User;
+import com.furniture.rental.security.LoginRateLimitFilter;
 import com.furniture.rental.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -26,8 +27,11 @@ public class AuthController {
     }
 
     @GetMapping("/login")
-    public String login(@RequestParam(required = false) String error, Model model) {
-        if (error != null) {
+    public String login(@RequestParam(required = false) String error,
+            @RequestParam(required = false) String locked, Model model) {
+        if (locked != null) {
+            model.addAttribute("loginError", LoginRateLimitFilter.LOCKED_MESSAGE);
+        } else if (error != null) {
             model.addAttribute("loginError", "Invalid username or password.");
         }
         return "login";

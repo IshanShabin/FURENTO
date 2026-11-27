@@ -5,13 +5,22 @@ import com.furniture.rental.repository.UserRepository;
 import com.furniture.rental.security.JwtAuthenticationFilter;
 import com.furniture.rental.security.JwtService;
 import com.furniture.rental.security.LegacyAwarePasswordEncoder;
+import com.furniture.rental.security.LoginAttemptListener;
+import com.furniture.rental.security.LoginAttemptService;
+import com.furniture.rental.security.LoginProtectionProperties;
+import com.furniture.rental.security.LoginRateLimitFilter;
 import com.furniture.rental.service.CustomUserDetailsService;
 import com.furniture.rental.security.JsonAccessDeniedHandler;
+
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -35,6 +44,7 @@ import java.util.LinkedHashMap;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@EnableConfigurationProperties(LoginProtectionProperties.class)
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -47,7 +57,9 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
-            DaoAuthenticationProvider authenticationProvider) throws Exception {
+            DaoAuthenticationProvider authenticationProvider,
+            LoginAttemptService loginAttempts,
+            LoginProtectionProperties loginProperties) throws Exception {
         http
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
@@ -96,13 +108,31 @@ public class SecurityConfig {
                         .authenticationEntryPoint(entryPoint())
                         .accessDeniedHandler(new JsonAccessDeniedHandler()))
                 .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new LoginRateLimitFilter(loginAttempts, loginProperties),
+                        UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new LegacyAwarePasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationEventPublisher authenticationEventPublisher(ApplicationEventPublisher publisher) {
+        return new DefaultAuthenticationEventPublisher(publisher);
+    }
+
+    @Bean
+    public LoginAttemptService loginAttemptService(LoginProtectionProperties properties) {
+        return new LoginAttemptService(properties);
+    }
+
+    @Bean
+    public LoginAttemptListener loginAttemptListener(LoginAttemptService attempts,
+            LoginProtectionProperties properties) {
+        return new LoginAttemptListener(attempts, properties);
     }
 
     private AuthenticationEntryPoint entryPoint() {
