@@ -38,7 +38,7 @@ FURENTO is a full-stack furniture rental platform built as a portfolio project. 
 
 ## Technology
 
-- Java 17 and Spring Boot 3.2
+- Java 17 and Spring Boot 3.2.1
 - Spring MVC and Thymeleaf (server-rendered pages), Bootstrap 5
 - Spring Data JPA and Hibernate, MySQL 8
 - Spring Security with role-based access (`ADMIN`, `CUSTOMER`), JWT in an HTTP-only cookie, and CSRF protection
@@ -180,6 +180,14 @@ furniture-rental-system/
     furniture-catalog.json   sample catalog
   src/test/java/  unit and web-layer tests
 ```
+
+## Known Limitations
+
+- **Spring Boot version:** This project runs on Spring Boot 3.2.1, which reached end-of-life in December 2024 and no longer receives open-source security patches. It is functionally complete and secure for a portfolio demo. Upgrading to Spring Boot 4.1.x (Spring Framework 7, Jackson 3) is planned as a future enhancement and requires a staged migration due to breaking changes in the test layer (`@MockBean` → `@MockitoBean`) and the JWT library's Jackson dependency.
+- **Payments:** Razorpay is in test mode only. No real money is processed. Refunds are not automated.
+- **Late fees:** Not payable online; settled manually outside the app.
+- **Image storage:** Furniture images are stored on the EC2 instance disk using a persistent Docker volume. Amazon S3 integration is a planned future improvement.
+- **Rate-limiting counters:** Stored in memory; reset on application restart and do not work across multiple servers.
 
 ## Roadmap
 
