@@ -28,11 +28,15 @@ public class AuthController {
 
     @GetMapping("/login")
     public String login(@RequestParam(required = false) String error,
-            @RequestParam(required = false) String locked, Model model) {
+            @RequestParam(required = false) String locked,
+            @RequestParam(required = false) String logout, Model model) {
         if (locked != null) {
             model.addAttribute("loginError", LoginRateLimitFilter.LOCKED_MESSAGE);
         } else if (error != null) {
             model.addAttribute("loginError", "Invalid username or password.");
+        }
+        if (logout != null) {
+            model.addAttribute("logoutMessage", "You have been logged out successfully.");
         }
         return "login";
     }

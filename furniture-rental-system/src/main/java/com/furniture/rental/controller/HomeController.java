@@ -11,6 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -27,7 +28,10 @@ public class HomeController {
     private CategoryService categoryService;
 
     @GetMapping("/")
-    public String home(Model model) {
+    public String home(@RequestParam(required = false) String logout, Model model) {
+        if (logout != null) {
+            model.addAttribute("logoutMessage", "You have been logged out successfully.");
+        }
         model.addAttribute("trendingFurniture", furnitureService.getTrendingFurniture());
         model.addAttribute("categories", categoryService.getAllCategories());
         return "index";

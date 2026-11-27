@@ -39,6 +39,7 @@ import org.springframework.security.web.authentication.DelegatingAuthenticationE
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import java.util.LinkedHashMap;
 
 @Configuration
@@ -102,13 +103,15 @@ public class SecurityConfig {
                                 jwtService.revokeToken(token);
                             }
                             response.addHeader(HttpHeaders.SET_COOKIE, jwtService.clearAuthCookie().toString());
-                            response.sendRedirect("/");
+                            boolean admin = authentication != null && authentication.getAuthorities().stream()
+                                    .anyMatch(authority -> "ROLE_ADMIN".equals(authority.getAuthority()));
+                            response.sendRedirect(admin ? "/login?logout=true" : "/?logout=true");
                         }))
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(entryPoint())
                         .accessDeniedHandler(new JsonAccessDeniedHandler()))
                 .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter, LogoutFilter.class)
                 .addFilterBefore(new LoginRateLimitFilter(loginAttempts, loginProperties),
                         UsernamePasswordAuthenticationFilter.class);
         return http.build();
